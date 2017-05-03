@@ -2,4 +2,4 @@
 
 set main=%1
 set location=%cd%
-call ../clean.cmd %location% %main%
+call ../make.cmd %location% %main%
