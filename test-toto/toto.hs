@@ -29,11 +29,18 @@ concatene :: Liste -> Liste -> Liste
 concatene Vide w = w
 concatene (Ajout x l) w = Ajout x (concatene l w)
 
--- longueur (ameliore l w) = longueur l
--- longueur (concatene l1 l2) = (longueur l1) + (longueur l2)
--- ameliore (concatene l1 l2) w = concatene (ameliore l1 w) (ameliore l2 w)
--- ameliore (ameliore l w) (-w) = l
--- concatene (concatene l1 l2) l3 = concatene l1 (concatene l2 l3)
+
+prop1 = \l -> \w -> longueur (ameliore l w) == longueur l
+-- prop1 (Ajout 1 Vide) 12
+-- prop1 [1..10] 2
+
+
+prop2 = \l1 -> \l2 -> longueur (concatene l1 l2) == (longueur l1) + (longueur l2)
+-- prop2 (Ajout 1 (Ajout 2 Vide)) (Ajout 3 Vide)
+
+-- prop3 = \l1 -> \l2 -> \w -> ameliore (concatene l1 l2) w == concatene (ameliore l1 w) (ameliore l2 w)
+-- prop4 = \l -> \w -> ameliore (ameliore l w) (-w) == l
+-- prop5 = \l1 -> \l2 -> \l3 -> concatene (concatene l1 l2) l3 == concatene l1 (concatene l2 l3)
 
 data Liste2 = Int Liste
    deriving (Show)
@@ -43,8 +50,9 @@ data Liste2 = Int Liste
 longueur2 0 Vide = 0
 longueur2 n (Ajout x l) = n
 
--- map1 f Vide = Vide
--- map1 f (Ajout x l) = Ajout (f x) (map1 f l)
+map' f Vide = Vide
+map' f (Ajout x l) = Ajout (f x) (map' f l)
+-- map' (+5) (Ajout 1 (Ajout 2 Vide))
 
 
 
