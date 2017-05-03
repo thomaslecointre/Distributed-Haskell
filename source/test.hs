@@ -1,4 +1,5 @@
 import Data.List
+import Data.Char
 
 factorial :: Integer -> Integer
 factorial 1 = 1
@@ -46,3 +47,7 @@ pertinence m l = do
 					length (filter (== m') (words l))
 			else length (filter (== m) (words l))
 
+crypt s = 
+        if elem ' ' s 
+        then unwords ( map crypt (words s) )
+        else map (chr . (+1) . ord) s
