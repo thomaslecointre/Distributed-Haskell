@@ -1,5 +1,6 @@
 import Network.HTTP
 import System.Environment
+import Data.String.Unicode
 
 openURL x = getResponseBody =<< simpleHTTP (getRequest x)
 
@@ -7,9 +8,9 @@ main = do
     args <- getArgs
     case args of 
       reference -> do
-        let saison = "1"
-        src <- openURL ("http://www.imdb.com/title/" ++ reference ++ "/episodes?season=1&ref_=tt_eps_sn_" ++ saison)
-        writeFile (reference ++ ".html")
+        src <- openURL ("http://www.imdb.com/title/" ++ (reference !! 0) ++ "/episodes?season=1")
+        print src
+        writeFile ((reference !! 0) ++ ".html") src
       _ -> putStrLn "Wrong number of arguments"
 
 {-
