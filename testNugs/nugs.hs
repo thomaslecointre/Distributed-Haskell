@@ -38,8 +38,8 @@ concatene (Ajout x l) w = Ajout x (concatene l w)
 data Liste2 = Int Liste
    deriving (Show)
 
-Vide2 = 0 Vide
-Ajout2 x (n l) = (n+1) (Ajout x l)
+-- Vide2 = 0 Vide
+-- Ajout2 x (n l) = (n+1) (Ajout x l)
 longueur2 0 Vide = 0
 longueur2 n (Ajout x l) = n
 
