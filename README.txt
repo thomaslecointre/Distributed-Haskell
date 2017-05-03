@@ -9,4 +9,6 @@
 Blibliothèques Haskell:
 
 tagsoup -- récupère l'html et permet de faire un traitement sur un arbre xml.
-aeson -- encodeur, décodeur JSON 
+aeson -- encodeur, décodeur JSON
+Network
+HTTP
