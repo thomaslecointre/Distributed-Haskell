@@ -1,17 +1,19 @@
 import Network.HTTP
 import System.Environment
-import Data.String.Unicode
+import GHC.IO.Encoding
+import Text.HTML.TagSoup
 
 openURL x = getResponseBody =<< simpleHTTP (getRequest x)
 
+main :: IO()
 main = do
+    setLocaleEncoding utf8
     args <- getArgs
     case args of 
       reference -> do
         src <- openURL ("http://www.imdb.com/title/" ++ (reference !! 0) ++ "/episodes?season=1")
         print src
         writeFile ((reference !! 0) ++ ".html") src
-      _ -> putStrLn "Wrong number of arguments"
 
 {-
 Main.nameSerie.add("Game of Thrones");
