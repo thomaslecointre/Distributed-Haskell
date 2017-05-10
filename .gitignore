@@ -3,3 +3,4 @@
 *.exe
 *.html
 *.htm
+server/node_modules/
