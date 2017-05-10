@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Haskell-Search</title>
+    </head>
+    <body>
+    	<form>
+    		<input type="text" name="search">
+    		<button id="click-me">Click Me!</button>
+    		<script type="text/javascript">
+          $(document).ready(function() {
+                     $(#click-me).click(function() {
+                       $.ajax({
+                         type : "get",
+                         url : "/search",
+                         data : $(#click-me).val();,
+                         success : function(data) {
+                           document.write(data);
+                         }
+                       });
+                     });
+                   });
+    		</script>
+    	</form>
+    </body>
+</html>
