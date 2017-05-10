@@ -1,13 +1,11 @@
 {
-    "name"          : "node-web-scrape",
+    "name"          : "haskell-search",
     "version"       : "0.0.1",
-    "description"   : "Scrape le web.",
+    "description"   : "search ",
     "main"          : "server.js",
     "author"        : "Scotch",
     "dependencies"  : {
         "express"   : "latest",
-        "request"   : "latest",
-        "cheerio"   : "latest",
         "imdb-api"  : "latest"
     }
 }
