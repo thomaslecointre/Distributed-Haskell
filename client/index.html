@@ -8,6 +8,9 @@
     	<form>
     		<input id="search" type="text">
     		<button id="click-me">Click Me!</button>
+        <div class="text-area">
+
+        </div>
     		<script type="text/javascript">
           $(document).ready(function() {
                      $("#click-me").click(function() {
@@ -19,6 +22,18 @@
                          },
                          success : function(data) {
                            document.write(data);
+                         }
+                       });
+                     });
+                     $("#search").keydown(function(event) {
+                       $.ajax({
+                         type : "POST",
+                         url : "/search",
+                         data : {
+                           search : $("#search").val()
+                         },
+                         success : function(data) {
+                           $(".text-area").text(data.toString());
                          }
                        });
                      });

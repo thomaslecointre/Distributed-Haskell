@@ -21,7 +21,7 @@ app.post('/search', function (req, res) {
   // console.log(response);
   res.end(JSON.stringify(response));
   */
-  res.end("received");
+  res.end(search);
 });
 
 app.get('/', function (req, res) {
