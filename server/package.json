@@ -1,11 +1,12 @@
 {
     "name"          : "haskell-search",
     "version"       : "0.0.1",
-    "description"   : "search ",
+    "description"   : "search",
     "main"          : "server.js",
     "author"        : "Scotch",
     "dependencies"  : {
         "express"   : "latest",
+        "body-parser" : "latest",
         "imdb-api"  : "latest"
     }
 }
