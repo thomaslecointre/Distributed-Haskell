@@ -1,10 +1,10 @@
 // Imports
-var express     = require("express");
+var express = require("express");
 var bodyParser = require("body-parser");
-var fs          = require("fs");
-var imdb        = require("imdb-api");
-var path        = require("path");
-var app         = express();
+var fs = require("fs");
+var imdb = require("imdb-api");
+var path = require("path");
+var app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -29,9 +29,9 @@ app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname, "..", "client", "index.html"));
 });
 
-app.use(function(req, res, next){
-    res.setHeader('Content-Type', 'text/plain');
-    res.send(404, 'Page not found !');
+app.use(function (req, res, next) {
+  res.setHeader('Content-Type', 'text/plain');
+  res.send(404, 'Page not found !');
 });
 
 
