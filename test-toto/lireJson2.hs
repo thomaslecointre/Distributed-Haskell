@@ -37,14 +37,21 @@ data Serie = Serie
 
 instance FromJSON Serie where
     parseJSON (Object v) = do
-        serie     <- v .: "serie"
-        saison     <- v .: "saison"
-        episode     <- v .: "episode"
-        titre     <- v .: "titre"
-        resume     <- v .: "resume"
+        serie   <- v .: "serie"
+        saison  <- v .: "saison"
+        episode <- v .: "episode"
+        titre   <- v .: "titre"
+        resume  <- v .: "resume"
         return $ Serie serie saison episode titre resume
 
 
+main = do
+    path <- getLine
+    testJson <- readFile path
+    case decode testJson :: Maybe Serie of
+        Just serie -> print serie
+        Nothing -> Prelude.putStrLn "Couldn't parse the JSON data"
+{-
 main = do
     setLocaleEncoding utf8
     args <- getArgs
@@ -56,6 +63,7 @@ main = do
         case decode testJson :: Maybe Serie of
           Just serie -> print serie
           Nothing -> Prelude.putStrLn "Couldn't parse the JSON data"
+-}
 {-
 main :: IO ()
 main = case decode testJson :: Maybe Serie of
@@ -64,6 +72,8 @@ main = case decode testJson :: Maybe Serie of
 -}
 
 --print . unlines . map unwords $ map words $ lines "je\nje"
+--print . unlines $ lines "je\nje"
+--print $ "je\nje"
 
 
 {-
