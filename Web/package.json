@@ -7,7 +7,6 @@
     "dependencies"  : {
         "express"   : "latest",
         "body-parser" : "latest",
-        "imdb-api"  : "latest",
-        "node-mon"  : "latest"
+        "imdb-api"  : "latest"
     }
 }
