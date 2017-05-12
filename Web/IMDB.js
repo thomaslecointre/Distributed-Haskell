@@ -1,6 +1,32 @@
 module.exports = {
   query : function (query) {
+    var fs = require("fs");
+    var path = require("path");
+    var episodes = [];
     var imdb = require("imdb-api");
-    imdb.get(query).then(console.log);
+    imdb.get(query, (err, things) => {
+      var title = things["title"];
+      var urlTitle = title.split(' ').join('_');
+      var seasonPath = path.join("Public", urlTitle);
+      if (!fs.existsSync(seasonPath))  {
+        fs.mkdirSync(seasonPath);
+        things.episodes((err, moreThings) => {
+          moreThings.forEach(function(item, index) {
+            imdb.getById(item["imdbid"]).then(offload);
+            function offload(idThings) {
+              console.log(idThings);
+              var season = idThings["season"].toString();
+              var episode = idThings["episode"].toString();
+              if(!fs.existsSync(path.join(seasonPath, season))) {
+                var episodePath = path.join(seasonPath, season, episode, "episode.json");
+                if(!fs.existsSync(episodePath)) {
+                  fs.appendFileSync(episodePath, idThings);
+                }
+              }
+            }
+          });
+        });
+      }
+    });
   }
 }

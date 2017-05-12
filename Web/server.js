@@ -11,7 +11,8 @@ imdb.query("game of thrones");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.use('/client', express.static(__dirname + "/client"));
+app.use('/Public', express.static(path.join(__dirname, "Public")));
+app.use('/Client', express.static(path.join(__dirname, "Public", "Client")));
 
 app.post('/search', function (req, res) {
   console.log("Request for search result");
@@ -22,7 +23,7 @@ app.post('/search', function (req, res) {
 
 app.get('/', function (req, res) {
   console.log("Request for home page");
-  res.sendFile(path.join(__dirname, "client", "index.html"));
+  res.sendFile(path.join(__dirname, "Public", "Client", "index.html"));
 });
 
 var server = app.listen(8081, function () {
