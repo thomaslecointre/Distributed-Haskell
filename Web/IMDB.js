@@ -18,14 +18,19 @@ module.exports = {
               var season = idThings["season"].toString();
               var episode = idThings["episode"].toString();
               if(!fs.existsSync(path.join(seasonPath, season))) {
-                var episodePath = path.join(seasonPath, season, episode, "episode.json");
-                if(!fs.existsSync(episodePath)) {
-                  fs.appendFileSync(episodePath, idThings);
+                fs.mkdirSync(path.join(seasonPath, season));
+                if(!fs.existsSync(path.join(seasonPath, season, episode))) {
+                  fs.mkdirSync(path.join(seasonpath, season, episode));
                 }
+              }
+              var episodePath = path.join(seasonPath, season, episode, "episode.json");
+              if(!fs.existsSync(episodePath)) {
+                fs.appendFileSync(episodePath, JSON.stringify(idThings));
               }
             }
           });
         });
+
       }
     });
   }
