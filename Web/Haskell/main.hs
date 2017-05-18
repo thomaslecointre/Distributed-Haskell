@@ -1,4 +1,7 @@
 
+import Text.HandsomeSoup
+
 main :: IO()
 main = do
-  print "Hello, World!"
+  let doc = fromUrl "http://en.wikipedia.org/wiki/Narwhal"
+  print doc

@@ -13,7 +13,7 @@ tagsoup -- r�cup�re l'html et permet de faire un traitement sur un arbre xml
 aeson -- encodeur, d�codeur JSON
 Network
 HTTP
-snowball -- stemming
+HandsomeSoup
 
 
 
