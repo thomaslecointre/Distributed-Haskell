@@ -1,19 +1,19 @@
 -- Titre --
 
-1) Installer la plateforme haskell sur https://www.haskell.org/ adapté à votre ordinateur (version full)
+1) Installer la plateforme haskell sur https://www.haskell.org/ adaptï¿½ ï¿½ votre ordinateur (version full)
 2) Utiliser la commande : cabal update
-3) Installer les bibliothèques haskell utilisées
+3) Installer les bibliothï¿½ques haskell utilisï¿½es
 4) Lancer le script projet-haskell.cmd
-5) Rentrer le nom de la série puis le mot clef
+5) Rentrer le nom de la sï¿½rie puis le mot clef
 6) ... (site web)
 
-Blibliothèques Haskell:
+Blibliothï¿½ques Haskell:
 
-tagsoup -- récupère l'html et permet de faire un traitement sur un arbre xml.
-aeson -- encodeur, décodeur JSON
+tagsoup -- rï¿½cupï¿½re l'html et permet de faire un traitement sur un arbre xml.
+aeson -- encodeur, dï¿½codeur JSON
 Network
 HTTP
-
+snowball -- stemming
 
 
 
@@ -21,4 +21,3 @@ HTTP
 cabal install -j --disable-tests criterion
 
 ???? http-conduit ?????
-
