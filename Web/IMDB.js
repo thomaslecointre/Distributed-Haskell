@@ -5,9 +5,31 @@ module.exports = {
     var episodes = [];
     var imdb = require("imdb-api");
     imdb.get(query, (err, things) => {
-      var title = things["title"];
-      var urlTitle = title.split(' ').join('_');
-      var seasonPath = path.join("Public", urlTitle);
+      if (err) {
+        console.error("Query failed");
+      } else {
+        // console.log(things);
+        var title = things["title"];
+        var urlTitle = title.split(' ').join('_');
+        var seasonPath = path.join("Public", urlTitle);
+
+        if(!fs.existsSync(seasonPath)) {
+          fs.mkdirSync(seasonPath);
+        }
+
+        var seasonCount = things["totalseasons"];
+
+        for(var seasonNumber = 0; seasonNumber < seasonCount; seasonNumber++) {
+          console.log("Iterating...");
+          if(!fs.existsSync(path.join(seasonPath, seasonNumber))) {
+            console.log("Creating directory...");
+            fs.mkdir(path.join(seasonPath, seasonNumber));
+            console.log("Directory created");
+          }
+        }
+      }
+      // console.log(things);
+      /*
       if (!fs.existsSync(seasonPath))  {
         fs.mkdirSync(seasonPath);
         things.episodes((err, moreThings) => {
@@ -32,6 +54,7 @@ module.exports = {
         });
 
       }
+      */
     });
   }
 }
