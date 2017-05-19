@@ -5,8 +5,11 @@ var fs = require("fs");
 var path = require("path");
 var app = express();
 var imdb = require("./IMDB");
+var haskell = require("./Haskell");
 
-imdb.query("game of thrones");
+haskell.launch();
+
+// imdb.query("game of thrones");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
