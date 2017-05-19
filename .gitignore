@@ -2,3 +2,4 @@
 *.hi
 *.exe
 Web/node_modules/
+.vscode/
