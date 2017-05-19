@@ -16,6 +16,7 @@ HTTP
 HandsomeSoup
 
 
+parallel
 
 ???? stemmer ?????
 cabal install -j --disable-tests criterion
