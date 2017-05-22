@@ -49,4 +49,4 @@ main = do
     case decode testJson :: Maybe Serie of
         Just serie -> print serie
         Nothing -> Prelude.putStrLn "Couldn't parse the JSON data"
--- dans cmd : runhaskell lireJsonv2.hs -> GotTest.json
+-- dans cmd : runhaskell lireJson.hs -> lireJson.json

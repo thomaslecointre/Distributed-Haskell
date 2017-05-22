@@ -40,3 +40,5 @@ main = do
     let tmp = listTotale episodes -- [("1","1"),("1","2"),("1","3"),("2","1"),("2","2"),("2","3"),("3","1"),("3","2")]
     let res = listURL serie tmp -- ["GoT/1/1","GoT/1/2","GoT/1/3","GoT/2/1","GoT/2/2","GoT/2/3","GoT/3/1","GoT/3/2"]
     print res
+    
+-- ip, port, mot, serie, saison, nbEpisodes    ->     url = ip:port/Public/serie/saison/[1..nbEpisodes]
