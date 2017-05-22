@@ -3,20 +3,28 @@
 
 <head>
   <title>Haskell-Search</title>
+  <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="Public/Client/styles.css" />
 </head>
 
 <body>
-  <form>
-    <input id="search" type="text">
-    <button id="click-me">Click Me!</button>
-    <div class="text-area">
-
+  
+  <div id="search">
+    <div>
+      <input id="search-series" type="text" placeholder="Ex: Game of Thrones" />
     </div>
-    <script type="text/javascript" src="Public/Client/client.js">
+    <div>
+      <input id="search-keyword" type="text" placeholder="Ex: Stark" />
+    </div>
+  </div>
+  
+  <div class="text-area">
 
-    </script>
-  </form>
+  </div>
+
+  <script type="text/javascript" src="Public/Client/client.js"></script>
+  
 </body>
 
 </html>

@@ -5,7 +5,9 @@ module.exports = {
     const fs = require("fs");
     const path = require("path");
 
-    const cmd = spawn(path.join(__dirname, "Haskell", "main.cmd"), ["Game_of_Thrones", "10", "10", "10", "10", "10", "10"]);
+    const haskell = path.join(__dirname, "Haskell");
+    
+    const cmd = spawn(path.join(haskell, "main.cmd"), [4444]);
       
     cmd.stdout.on('data', (data) => {
       console.log(`stdout: ${data}`);

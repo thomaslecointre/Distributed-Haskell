@@ -7,7 +7,7 @@ var app = express();
 var imdb = require("./IMDB");
 var haskell = require("./Haskell");
 
-haskell.launch();
+// haskell.launch();
 
 // imdb.query("game of thrones");
 
@@ -17,10 +17,11 @@ app.use(bodyParser.json());
 app.use('/Public', express.static(path.join(__dirname, "Public")));
 app.use('/Client', express.static(path.join(__dirname, "Public", "Client")));
 
-app.post('/search', function (req, res) {
+app.get('/search/:data', function (req, res) {
   console.log("Request made for search result");
-  var search = req.body.search;
+  var search = req.params.search;
   res.end(search);
+  imdb.query(search);
 });
 
 app.get('/', function (req, res) {

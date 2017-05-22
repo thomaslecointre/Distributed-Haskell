@@ -1,7 +1,10 @@
-@ECHO OFF
-::cd Web/Haskell/
-cd Web
-runhaskell Haskell\main.hs %*
-::ghc --make ./main.hs -o main.exe
-::del *.o *.hi
-::call main.exe %*
+cd Haskell
+
+if exist Messenger.exe (
+    del Messenger.exe
+)
+
+runhaskell Messenger.hs %*
+::ghc --make Messenger.hs -o Messenger.exe
+::del Messenger.o Messenger.hi
+::call Messenger.exe %*
