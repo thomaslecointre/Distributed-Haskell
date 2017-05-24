@@ -14,7 +14,7 @@ main = do
     -- -> tmp3.txt
 --    PorterStemmer.hs tmp3.txt
     -- -> tmp4.txt
---    Statistiques.hs tmp4.txt
+--    Statistics2.hs tmp4.txt
     -- -> statistics.txt
     
 --    filtre

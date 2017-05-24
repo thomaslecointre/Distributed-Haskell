@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Main (main) where
+module LireJsonv5 (main) where
 
 import Prelude ()
 import Prelude.Compat

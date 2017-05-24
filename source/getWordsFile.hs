@@ -1,3 +1,5 @@
+module GetWordsFile (main) where
+
 --import Prelude ()
 --import Prelude.Compat
 
