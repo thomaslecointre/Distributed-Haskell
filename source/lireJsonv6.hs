@@ -1,11 +1,11 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module LireJson (main) where
+module LireJsonv6 (main) where
 
 import Prelude ()
 import Prelude.Compat
-
+import System.Environment
 import Data.Aeson (FromJSON, ToJSON, decode, encode)
 import qualified Data.ByteString.Lazy as B
 import qualified Data.ByteString.Lazy.Char8 as BL
@@ -32,7 +32,8 @@ instance ToJSON NuageDeMots
 
 main :: IO ()
 main = do
-    path <- getLine
+    args <- getArgs
+    let path = "jsonSansNuageDeMots.json"
     testJson <- B.readFile path
     let req = decode testJson :: Maybe Serie
     case req :: Maybe Serie of

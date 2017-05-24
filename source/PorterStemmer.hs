@@ -1,5 +1,4 @@
-module Main
-where
+module PorterStemmer where
 
 import Control.Monad
 import Data.Maybe
