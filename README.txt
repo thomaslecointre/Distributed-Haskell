@@ -9,11 +9,9 @@
 
 Bliblioth�ques Haskell:
 
-tagsoup -- r�cup�re l'html et permet de faire un traitement sur un arbre xml.
 aeson -- encodeur, d�codeur JSON
 Network
 HTTP
-HandsomeSoup
 
 
 parallel
@@ -21,5 +19,5 @@ parallel
 ???? stemmer ?????
 cabal install -j --disable-tests criterion
 cabal install mtl        (monad transform library)
-
+cabal install network-info 
 ???? http-conduit ?????
