@@ -1,4 +1,4 @@
-module LireArgumentEsclave (main) where
+module LireArgumentEsclave where
 
 import System.Environment
 
@@ -22,12 +22,11 @@ ipPortKeywordSerieSeasonEpisodes _ [] = []
 ipPortKeywordSerieSeasonEpisodes l (x:xs) = (parseIpPortKeywordSerieSeasonEpisode (l ++ (x:[]))):(ipPortKeywordSerieSeasonEpisodes l xs)
 
 
-main = do -- ne marche pas 
-    args <- getArgs -- [IP, Port, "Ned", "GoT","1","10"]
-    let (ipPortKeywordSerieSeason, nbEpisodes) = ipPortKeywordSerieSeasonNbEpisode args -- ([IP,Port,"Ned","GoT","1"],"10")
-    let keywordURLList = ipPortKeywordSerieSeasonEpisodes ipPortKeywordSerieSeason (listSeasonEpisode (listStringNumberToList nbEpisodes)) -- [("Ned", IP:Port"/GoT/1/1"),("Ned", IP:Port"/GoT/1/2"), ... ("Ned", IP:Port"/GoT/1/10")]
-    print keywordURLList
-    
+lireArgumentEsclave :: [String] -> [(String, String)]
+lireArgumentEsclave [] = []
+lireArgumentEsclave args = -- [IP, Port, "Ned", "GoT","1","10"]
+    let (ipPortKeywordSerieSeason, nbEpisodes) = ipPortKeywordSerieSeasonNbEpisode args in -- ([IP,Port,"Ned","GoT","1"],"10")
+    ipPortKeywordSerieSeasonEpisodes ipPortKeywordSerieSeason (listSeasonEpisode (listStringNumberToList nbEpisodes)) -- [("Ned", IP:Port"/GoT/1/1"),("Ned", IP:Port"/GoT/1/2"), ... ("Ned", IP:Port"/GoT/1/10")]
 
 {-
 let (keyword, URL) = parseIpPortKeywordSerieSeasonEpisode args -- ("Ned", IP:Port"/GoT/1/10")
