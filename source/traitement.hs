@@ -1,7 +1,22 @@
 module Traitement (main) where
 
+import qualified LireArgumentMaitre as LAM
+import qualified LireArgumentEsclave as LAE
+import qualified LireURLJson as LUJ
+import qualified LireJsonv6 as LJ
+import qualified GetWordsFilev2 as GWF
+import qualified PorterStemmer as PS
+import qualified Statisticsv2 as Stat
 
 main = do
+--    LAM.main
+--    LAE.main
+--    LUJ.main
+    LJ.main
+    GWF.main
+    PS.main
+    Stat.main
+    
 --    lireArgumentMaitre.hs www.test.org 8080 Ned GoT 10 10 10 10 7
     -- -> [["www.test.org","8080","Ned","GoT","1","10"], ["www.test.org","8080","Ned","GoT","2","10"], ... ["www.test.org","8080","Ned","GoT","5","7"]]
 --    lireArgumentEsclave.hs www.test.org 8080 Ned GoT 1 10

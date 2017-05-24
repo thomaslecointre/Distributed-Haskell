@@ -1,6 +1,6 @@
-module Statistics2 (main) where
-
 {-# LANGUAGE DeriveGeneric #-}
+
+module Statisticsv2 (main) where
 
 import Data.List
 import System.Environment
