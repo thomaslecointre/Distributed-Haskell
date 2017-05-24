@@ -1,3 +1,5 @@
+module LireArgumentMaitre (main) where
+
 import System.Environment
 
 parseIpPortKeywordSerieNumberEpisodePerSeason :: [String] -> ([String], [String])

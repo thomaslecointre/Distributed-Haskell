@@ -1,3 +1,5 @@
+module LireArgumentEsclave (main) where
+
 import System.Environment
 
 ipPortKeywordSerieSeasonNbEpisode :: [String] -> ([String], String)

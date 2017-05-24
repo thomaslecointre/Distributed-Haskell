@@ -139,5 +139,5 @@ stem s | length s < 3 = s
 
 main :: IO ()
 main = do
-    content <- readFile "input.txt"
-    writeFile "output.txt" $ unlines $ map stem $ lines content
+    content <- readFile "tmp3.txt"
+    writeFile "tmp4.txt" $ unlines $ map stem $ lines content
