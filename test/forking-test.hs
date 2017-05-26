@@ -1,4 +1,5 @@
-import Network
+import qualified Network as N
+import qualified Network.Socket as NS
 import System.IO
 import System.Environment
 import Control.Concurrent
@@ -13,19 +14,24 @@ main = do
     updateRegistry registry registrationChan
 
 register :: Int -> Chan Int -> IO ()
-register p c = withSocketsDo $ do
-    sock <- listenOn $ PortNumber $ fromIntegral p
+register p c = NS.withSocketsDo $ do
+    sock <- N.listenOn $ N.PortNumber $ fromIntegral p
     putStrLn ("Accepting on ("++show p++")")
     handleConnections sock c
 
-handleConnections :: Socket -> Chan Int -> IO ()
+handleConnections :: N.Socket -> Chan Int -> IO ()
 handleConnections sock c = do
-    (handle, host, port) <- accept sock
+    -- (handle, host, port) <- accept sock
+    (socket, sockaddr) <- NS.accept sock
+    handle <- NS.socketToHandle socket ReadMode
+    print sockaddr 
+    {--
     putStrLn "Registering connections..."
     hSetBuffering handle LineBuffering
     buffer <- hGetLine handle
     let registering = read buffer :: Int
     writeChan c registering
+    --}
     threadDelay 500000
     handleConnections sock c
 
