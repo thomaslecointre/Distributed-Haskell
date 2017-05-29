@@ -1,0 +1,91 @@
+? help
+
+? 5 + 7
+12:: Num a => a
+
+? "chris"
+"chris":: [Char]
+
+? [42,13,22]
+[42,13,22]:: Num t => [t]
+
+? sort [42,13,22]
+[13,22,42]:: (Num a, Ord a) => [a]
+
+? sort "chris"
+"chirs":: [Char]
+
+? (28,"chirs")
+(28,"chirs"):: Num t => (t, [Char])
+
+? fst (28,"chirs")
+28:: Num a => a
+
+? let x = 4 in x * x
+16:: Num a => a
+
+? let villain = (28,"chirs") in fst villain
+28:: Num a => a
+
+? 'a' : []
+"a":: [Char]
+
+? 'a' : 'b' : [] == ['a','b']
+True:: Bool
+
+? ['a','b','c'] == "abc"
+True:: Bool
+
+? map (+1) [1..5]
+[2,3,4,5,6]:: (Enum b, Num b) => [b]
+
+? (1,"George")
+(1,"George"):: Num t => (t, [Char])
+
+? let square x = x * x in square 52
+2704:: Num a => a
+
+? let add1 x = x + 1 in add1 5
+6:: Num a => a
+
+? let second x = snd x in second (3,4)
+4:: Num b => b
+
+? let square x = x * x in map square [1..10]
+[1,4,9,16,25,36,49,64,81,100]:: (Enum b, Num b) => [b]
+
+? let add1 x = x + 1 in map add1 [1,5,7]
+[2,6,8]:: Num b => [b]
+
+? let take5s = filter (==5) in take5s [1,5,2,5,3,5]
+[5,5,5]:: (Eq a, Num a) => [a]
+
+? let take5s = filter (==5) in map take5s [[1,5],[5],[1,1]]
+[[5],[5],[]]:: (Eq a, Num a) => [[a]]
+
+? toUpper 'a'
+'A':: Char
+
+? map toUpper "Chris"
+"CHRIS":: [Char]
+
+? let (a,b) = (10,12) in a * 2
+20:: Num a => a
+
+? let (a:b:c:[]) = "xyz" in a
+'x':: Char
+
+? let (a:_) = "xyz" in a
+'x':: Char
+
+? let (_,(a:_)) = (10,"abc") in a
+'a':: Char
+
+? let _:_:c:_ = "abcd" in c
+'c':: Char
+
+? let [a,b,c] = "cat" in (a,b,c)
+('c','a','t'):: (Char, Char, Char)
+
+? let abc@(a,b,c) = (10,20,30) in (abc,a,b,c)
+((10,20,30),10,20,30):: (Num t, Num t1, Num t2) => ((t, t1, t2), t, t1, t2)

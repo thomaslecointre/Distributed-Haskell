@@ -1,0 +1,33 @@
+{ 
+  "serie": "Game of Thrones", 
+  "saison": "1", 
+  "episode": "2", 
+  "titre": "The Kingsroad", 
+  "resume": "While Bran recovers from his fall, Ned takes only his daughters to Kings Landing. Jon Snow goes with his uncle Benjen to The Wall. Tyrion joins them.", 
+  "nuageDeMots": [ 
+      {
+          "mot": "bran", 
+          "occurence":"1"
+      }, 
+	  {
+          "mot": "recover", 
+          "occurence":"1"
+      }, 
+	  {
+          "mot": "fall", 
+          "occurence":"1"
+      }, 
+	  {
+          "mot": "ned", 
+          "occurence":"1"
+      }, 
+	  {
+          "mot": "take", 
+          "occurence":"1"
+      }, 
+	  {
+          "mot": "daughter", 
+          "occurence":"1"
+      }
+   ] 
+}

@@ -1,0 +1,44 @@
+* {
+	font-family: 'Raleway', sans-serif;
+}
+
+body {
+	background-color : #c5cae9;
+}
+
+#search {
+	margin: auto;
+	text-align: center;
+}
+
+#search div {
+	margin: 20px;
+}
+
+#search-series {
+	height: 100px;
+	width: 800px;
+	font-size: 50px;
+	text-align: center;
+	border-radius : 3px;
+	border : none;
+}
+
+#search-keyword {
+	height: 50px;
+	width: 300px;
+	font-size: 25px;
+	text-align: center;
+	border-radius : 3px;
+	border : none;
+}
+
+#submit {
+	background-color : #1a237e;
+	border-radius : 3px;
+	color : white;
+	border : none;
+	font-size: 16px;
+	height : 30px;
+	width : 90px;
+}
