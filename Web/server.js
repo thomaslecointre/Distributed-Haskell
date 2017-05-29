@@ -17,9 +17,9 @@ app.use(bodyParser.json());
 app.use('/Public', express.static(path.join(__dirname, "Public")));
 app.use('/Client', express.static(path.join(__dirname, "Public", "Client")));
 
-app.get('/search/:data', function (req, res) {
+app.get('/search/:series/:keyword', function (req, res) {
   console.log("Request made for search result");
-  var search = req.params.search;
+  var series = req.params.search;
   res.end(search);
   imdb.query(search);
 });
