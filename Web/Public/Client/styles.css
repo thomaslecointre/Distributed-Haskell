@@ -16,29 +16,34 @@ body {
 }
 
 #search-series {
-	height: 100px;
-	width: 800px;
-	font-size: 50px;
+	width: 70%;
+	font-size: 60px;
 	text-align: center;
-	border-radius : 3px;
+	border-radius : 2px;
 	border : none;
 }
 
 #search-keyword {
-	height: 50px;
-	width: 300px;
-	font-size: 25px;
+	width: 35%;
+	font-size: 40px;
 	text-align: center;
-	border-radius : 3px;
+	border-radius : 2px;
 	border : none;
 }
 
 #submit {
 	background-color : #1a237e;
-	border-radius : 3px;
+	border-radius : 2px;
 	color : white;
 	border : none;
 	font-size: 16px;
 	height : 30px;
 	width : 90px;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  	transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+
+#submit:hover {
+  box-shadow : 0 7px 14px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+  cursor : pointer;
 }
