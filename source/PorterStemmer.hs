@@ -1,3 +1,6 @@
+-- code récupéré en partie sur
+--https://tartarus.org/martin/PorterStemmer/haskell.txt
+
 module PorterStemmer where
 
 import Control.Monad
@@ -136,7 +139,5 @@ allSteps = step5 . step4 . step3 . step2 . step1
 stem s | length s < 3 = s
        | otherwise    = allSteps s
 
-main :: IO ()
-main = do
-    content <- readFile "tmp3.txt"
-    writeFile "tmp4.txt" $ unlines $ map stem $ lines content
+porterStemmer :: String -> String
+porterStemmer text = unlines $ map stem $ lines text

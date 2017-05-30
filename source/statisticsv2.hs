@@ -15,12 +15,10 @@ data NuageDeMots = NuageDeMots { mot :: String, occurence :: String }
 instance FromJSON NuageDeMots
 instance ToJSON NuageDeMots
 
-
-main = do
-    args <- getArgs
-    f <- readFile "tmp4.txt"
-    let ws = lines f
-    let ds = nub ws
-    let rs = map (\d -> (d,length (filter (\w -> d==w) ws))) ds
-    let ts = map (\(m,c) -> NuageDeMots { mot = m, occurence = (show c)}) rs
-    BL.writeFile "statistics.txt" (encode ts)
+statistics :: String -> FilePath -> IO ()
+statistics text path =
+    let ws = lines text in
+    let ds = nub ws in
+    let rs = map (\d -> (d,length (filter (\w -> d==w) ws))) ds in
+    let ts = map (\(m,c) -> NuageDeMots { mot = m, occurence = (show c)}) rs in
+    BL.writeFile path $ encode ts
