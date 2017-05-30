@@ -1,18 +1,14 @@
+-- code résupéré en partie sur
+--https://hackage.haskell.org/package/Condor-0.2/docs/src/Condor-Language-English-StopWords.html#isStopWord
+
 module GetWordsFilev2 where
     
 import qualified Data.Set as S    
 import qualified Data.Text as T
 import System.Environment
 
-
-separators = " \"',.\n"
-
-cut :: String -> [String]
-cut "" = []
-cut t = 
- let w = takeWhile (\x -> notElem x separators) t
-     r = dropWhile (\x -> elem x separators) (dropWhile (\x -> notElem x separators) t)
- in w:(cut r)
+removePunc :: String -> String
+removePunc xs = [ x | x <- xs, not (x `elem` ",.?!-:;\"\'") ]
 
 isStopWord :: T.Text -> Bool
 isStopWord w = S.member w stopWords
@@ -152,13 +148,5 @@ deleteStopWords :: [String] -> [String]
 deleteStopWords [] = []
 deleteStopWords (x:l) = if isStopWord $ T.pack x then deleteStopWords l else x:(deleteStopWords l)
 
-toLine :: String -> String
-toLine s = unlines $ deleteStopWords $ cut s
-
-
-main :: IO ()
-main = do
-    args <- getArgs
-    resume <- readFile "tmp2.txt"
-    writeFile "tmp3.txt" (toLine resume)
--- dans cmd : runhaskell getWordsFile.hs -> tmp2.txt
+getWordsFile :: String -> String
+getWordsFile resume = unlines $ deleteStopWords $ words $ removePunc resume

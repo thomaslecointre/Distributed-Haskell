@@ -8,22 +8,27 @@ import qualified GetWordsFilev2 as GWF
 import qualified PorterStemmer as PS
 import qualified Statisticsv2 as Stat
 
-traitementStatistiques1 :: IO ()
-traitementStatistiques1 =
+reconstructionURL :: IO ()
+reconstructionURL =
     let args = ["ip","port","Ned","GoT","3","3","2"] in
     let lam = LAM.lireArgumentMaitre args in -- [["ip","port","Ned","GoT","1","3"],["ip","port","Ned","GoT","2","3"],["ip","port","Ned","GoT","3","2"]]
     let lae = map (LAE.lireArgumentEsclave) lam in -- [[("Ned","ip:port/GoT/1/1"),("Ned","ip:port/GoT/1/2"),("Ned","ip:port/GoT/1/3")],[("Ned","ip:port/GoT/2/1"),("Ned","ip:port/GoT/2/2"),("Ned","ip:port/GoT/2/3")],[("Ned","ip:port/GoT/3/1"),("Ned","ip:port/GoT/3/2")]]
     writeFile "tmp.txt" (show lae)
---    let luj = map (LUJ.lireURLJson) $ map (LUJ.lireURLJson) lae in
 
---traitementStatistiques2 :: String -> ...
-traitementStatistiques2 =
+{-
     let args = "jsonSansNuageDeMots.json" in
+--    let luj = map (LUJ.lireURLJson) $ map (LUJ.lireURLJson) lae in
     let lj = LJ.lireJsonv6 args in
-    writeFile "tmp.txt" (show lj)
---    let gwf = GWF.getWordsFile lj in
---    let ps = PS.porterStemmer gwf in
---    Stat.statisticsv2
+    writeFile "tmp.txt" lj
+
+-}
+
+traitementStatistiques :: String -> IO ()
+traitementStatistiques resume =
+--    let resume = "\"Jon Arryn, the Hand of the King, is dead. King Robert Baratheon plans to ask his oldest friend, Eddard Stark, to take Jon's place. Across the sea, Viserys Targaryen plans to wed his sister to a nomadic warlord in exchange for an army.\"" in
+    let gwf = GWF.getWordsFile resume in
+    let ps = PS.porterStemmer gwf in
+    Stat.statistics ps "statistics.txt"
 
 
 --    lireArgumentMaitre.hs www.test.org 8080 Ned GoT 10 10 10 10 7
@@ -40,6 +45,3 @@ traitementStatistiques2 =
     -- -> tmp4.txt
 --    Statistics2.hs tmp4.txt
     -- -> statistics.txt
-    
---    filtre
---    return
