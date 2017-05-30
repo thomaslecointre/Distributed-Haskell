@@ -31,7 +31,7 @@ body {
 	border : none;
 }
 
-#submit {
+button {
 	background-color : #1a237e;
 	border-radius : 2px;
 	color : white;
@@ -43,7 +43,7 @@ body {
   	transition: all 0.3s cubic-bezier(.25,.8,.25,1);
 }
 
-#submit:hover {
+button:hover {
   box-shadow : 0 7px 14px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
   cursor : pointer;
 }

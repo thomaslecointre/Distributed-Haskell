@@ -1,13 +1,13 @@
 module.exports = {
   launch : function(arguments) {
-    const spawnSync = require("child_process").spawnSync;
-    const spawn = require("child_process").spawn;
-    const fs = require("fs");
-    const path = require("path");
+    const spawnSync = require('child_process').spawnSync;
+    const spawn = require('child_process').spawn;
+    const fs = require('fs');
+    const path = require('path');
 
-    const haskell = path.join(__dirname, "Haskell");
+    const haskell = path.join(__dirname, 'Haskell');
     
-    const cmd = spawn(path.join(haskell, "main.cmd"), [4444]);
+    const cmd = spawn(path.join(haskell, 'main.cmd'), [4444]);
       
     cmd.stdout.on('data', (data) => {
       console.log(`stdout: ${data}`);
@@ -22,7 +22,7 @@ module.exports = {
     });
 
     /*
-    const haskell = spawn(path.join(__dirname, "Haskell", "main.exe"), ["Game_of_Thrones", "10", "10", "10", "10", "10", "10"]);
+    const haskell = spawn(path.join(__dirname, 'Haskell', 'main.exe'), ['Game_of_Thrones', '10', '10', '10', '10', '10', '10']);
     
     haskell.stdout.on('data', (data) => {
       console.log(`stdout: ${data}`);
