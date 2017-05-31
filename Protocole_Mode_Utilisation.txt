@@ -3,15 +3,15 @@ Protocole de communication et mode d'emploi
 
 Introduction
 
-Notre plateforme intitulé Haskell-Search utilise un protocole de communication optimisé pour une faible bande passante. Nous nous sommes
-efforcés de communiquer uniquement ce qui est nécessaire, laissant aux composants de remplir les informations manquantes où nécessaires.
+Notre plate-forme intitulé Haskell-Search utilise un protocole de communication optimisé pour une faible bande passante. Nous nous sommes
+efforcés de communiquer uniquement ce qui est nécessaire, laissant aux composants de remplir les informations manquantes ou nécessaires.
 
-Notre plateforme se déploie au minimum sur 2 ordinateurs. Le premier ordinateur habrite le Web Serveur (fonctionnant sous Node JS),
-le Messenger et le Master (la nomenclature des processus haskell est expliqué plus tard). Un Slave correspond à une machine capable 
-d'éxecuter du haskell.
+Notre plate-forme se déploie au minimum sur 2 ordinateurs. Le premier ordinateur abrite le Web Serveur (fonctionnant sous Node JS),
+le Messenger et le Master (la nomenclature des processus haskell est expliquée plus tard). Un Slave correspond à une machine capable 
+d'executer du haskell.
 
 Au préalable il est nécessaire que le Web Server et le Master (processus haskell) soient en route avant que le premier client
-ne se connecte. Chaque Slave doit s'enregister auprès du Master en se connectant au port 4444.
+ne se connecte. Chaque Slave doit s’enregistrer auprès du Master en se connectant au port 4444.
 
 Déroulement
 
@@ -34,15 +34,15 @@ une tentative de recherche.
 
 4. Le Master transforme ces données et envoie, à chaque Slave enregistré, un tableau de données correspondant à une saison
 de la série à traîter. Chaque Slave reçoit ces données sur le port 5000. L'adresse IP de chaque Slave est récupéré et connu
-avant même que le Master Le troisième et le quatrième argument correspondent respectivement au numéro de la saison 
-et le nombre d'épisodes pour cette saison. Ex: "[\"Ned\", \"game_of_thrones\", 1, 10]"
+avant même que le Master reçoive l'ordre venant du Messenger. Le troisième et le quatrième argument correspondent respectivement 
+au numéro de la saison et le nombre d'épisodes pour cette saison. Ex: "[\"Ned\", \"game_of_thrones\", 1, 10]"
 
 5. Chaque Slave transforme ces données pour reconstituer #épisodes url de la forme 
 http://haskell-search.net/public/game_of_thrones/1/1 . Cette URL est accompagnée d'une requête GET. 
 La donnée "public" est supposée valide dans la constitution des URL.
     - Le Web Server retourne un JSON sur succès. Sinon, le Slave doit recommencer la requête jusqu'à recevoir le JSON.
     - Chaque Slave traîte ses données.
-    - Après traîtement, chaque Slave envoie sur le port 4446 du Master un tableau indiquant que les données sont traîtées.
+    - Après traitement, chaque Slave envoie sur le port 4446 du Master un tableau indiquant que les données sont traitées.
     - Si le client a demandé une étude de mot clef, le Slave renvoie par exemple "[1, 1, 5]" où le premier argument correspond
     au numéro de la saison, le deuxième argument correspond au numéro de l'épisode et le troisième argument correspond au nombre
     d'occurrences du mot clef dans la description de l'épisode.
@@ -51,7 +51,7 @@ La donnée "public" est supposée valide dans la constitution des URL.
     correspond au nombre d'occurrences de ce mot.
 
 6. Après avoir reçu les données pour une saison, le Master recommence réaffecte une autre saison à un Slave disponible à travailler
-tant qu'il reste des saisons à étudier. Après avoir reçu l'ensemble des données traîtées il se met à créer des JSON suivant le type 
+tant qu'il reste des saisons à étudier. Après avoir reçu l'ensemble des données traitées il se met à créer des JSON suivant le type 
 d'étude.
 
 Pour une étude par mot clef il doit fabriquer 3 fichiers JSON indiquant la manière de remplir le template html 
@@ -84,7 +84,7 @@ Pour une étude par mot clef il doit fabriquer 3 fichiers JSON indiquant la mani
         - Le JSON a la forme suivante:
             {
                 "1_2" : 15,
-                "3_7  : 14,
+                "3_7"  : 14,
                 ...
             }
             Une clef est un string constitué d'un numéro de saison suivi d'un _ puis d'un numéro d'épisode. La valeur est la pertinence.
@@ -97,4 +97,7 @@ Pour une étude statistique, un seul JSON est nécessaire.
             ...
         }
         Une clef est un numéro de saison. La valeur est un tableau d'objets JSON où à chaque indice d'épisode, on a l'ensemble des
-        couples clefs, valeurs correspondant à un mot de la description et son occurence.
+        couples clefs, valeurs correspondant à un mot de la description et son occurrence.
+
+7. Suite au dépot de ces fichiers JSON, le Master envoie un signe de fin de traitement au Messenger. Le Messenger s'éteigne et le Web
+Server, enregistrant la fin du processus, peut alors remplir le template et envoyer les informations au client.
