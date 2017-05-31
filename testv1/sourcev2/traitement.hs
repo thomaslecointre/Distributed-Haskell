@@ -3,12 +3,11 @@ module TraitementStatistiques where
 import qualified LireArgumentMaitre as LAM
 import qualified LireArgumentEsclave as LAE
 import qualified LireURLJson as LUJ
+import qualified LireJsonv6 as LJ
 import qualified GetWordsFilev2 as GWF
 import qualified PorterStemmer as PS
 import qualified Statisticsv2 as Stat
 import qualified KeyWordOccurrence as KWO
-
-import qualified Data.Text as DT
 
 reconstructionURL :: IO ()
 reconstructionURL =
@@ -29,17 +28,14 @@ traitementStatistiques :: String -> IO ()
 traitementStatistiques resume =
 --    let resume = "\"Jon Arryn, the Hand of the King, is dead. King Robert Baratheon plans to ask his oldest friend, Eddard Stark, to take Jon's place. Across the sea, Viserys Targaryen plans to wed his sister to a nomadic warlord in exchange for an army.\"" in
     let gwf = GWF.getWordsFile resume in
-    let ps = DT.unpack . DT.toLower . DT.pack $ PS.porterStemmer gwf in
---    let ps = PS.porterStemmer gwf in
+    let ps = PS.porterStemmer gwf in
     Stat.statistics ps "statistics.txt"
 
-traitementKeyWord :: String -> String -> Int
+--traitementKeyWord :: String -> String -> Int
 traitementKeyWord keyword resume =
     let gwf = GWF.getWordsFile resume in
-    let kw = (DT.unpack . DT.toLower . DT.pack) (lines (PS.porterStemmer keyword) !! 0) in
-    let ps = DT.unpack . DT.toLower . DT.pack $ PS.porterStemmer gwf in
---    let kw = lines (PS.porterStemmer keyword) !! 0 in
---    let ps = PS.porterStemmer gwf in
+    let kw = PS.porterStemmer keyword in
+    let ps = PS.porterStemmer gwf in
     KWO.keyWordOccurrence kw ps
 
 
