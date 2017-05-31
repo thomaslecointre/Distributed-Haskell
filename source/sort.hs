@@ -1,5 +1,3 @@
--- {-# LANGUAGE DeriveGeneric #-}
-
 module Sort where
 
 import qualified Data.List as DL
@@ -14,8 +12,23 @@ chronogicalSort ((season, episode, occurrence):l) =
     let sortedList = DL.sort ((season, episode, occurrence):l) in
     (show $ show season) ++ " : " ++ (show $ takeThird sortedList)
 
-
 -- chronogicalSort [(1,2,3),(1,1,2),(1,3,4)] -> [(1,1,2),(1,2,3),(1,3,4)] -> "\"1\" : [2,3,4]"
+
+chronogicalSortForAllSeason :: [[(Int, Int, Int)]] -> String
+chronogicalSortForAllSeason [] = ""
+chronogicalSortForAllSeason (x:[]) = chronogicalSort x
+chronogicalSortForAllSeason (x:l) = (chronogicalSort x) ++ ", " ++ (chronogicalSortForAllSeason l)
+
+chronogicalSortToJSON :: [[(Int, Int, Int)]] -> String
+chronogicalSortToJSON [] = ""
+chronogicalSortToJSON l = "{" ++ (chronogicalSortForAllSeason l) ++ "}"
+
+-- chronogicalSortToJSON [[(1,1,2),(1,2,3)],[(2,1,4),(2,2,3)],[(3,1,2),(3,2,1)]] -> {"1" : [2,3], "2" : [4,3], "3" : [2,1]}
+
+
+
+
+
 
 changeList :: [(Int, Int, Int)] -> [(Int, Int, Int)]
 changeList [] = []
@@ -39,6 +52,21 @@ sortBySeason ((season, episode, occurrence):l) =
     
 -- sortBySeason [(1,2,3),(1,1,3),(1,3,4)] -> "\"1\" : [{\"3\":4},{\"1\":3},{\"2\":3}]"
 
+sortByAllSeason :: [[(Int, Int, Int)]] -> String
+sortByAllSeason [] = ""
+sortByAllSeason (x:[]) = sortBySeason x
+sortByAllSeason (x:l) = (sortBySeason x) ++ ", " ++ (sortByAllSeason l)
+
+sortBySeasonToJSON :: [[(Int, Int, Int)]] -> String
+sortBySeasonToJSON [] = ""
+sortBySeasonToJSON l = "{" ++ (sortByAllSeason l) ++ "}"
+
+-- sortBySeasonToJSON [[(1,1,2),(1,2,3)],[(2,1,4),(2,2,3)],[(3,1,2),(3,2,1)]] -> {"1" : [{ "2" : 3 }, { "1" : 2 }], "2" : [{ "1" : 4 }, { "2" : 3 }], "3" : [{ "1" : 2 }, { "2" : 1 }]}
+
+
+
+
+
 changeList2 :: [(Int, Int, Int)] -> [(Int, Int, Int)]
 changeList2 [] = []
 changeList2 ((season, episode, occurrence):l) =
@@ -51,11 +79,11 @@ relevanceToJSON ((occurrence, season, episode):[]) =
 relevanceToJSON ((occurrence, season, episode):l) =
     "\"" ++ (show $ -season) ++ "_" ++ (show $ -episode) ++ "\" : " ++ (show $ occurrence) ++ ", " ++ (relevanceToJSON l)
 
-sortByRelevance :: [(Int, Int, Int)] -> String
-sortByRelevance [] = ""
-sortByRelevance ((season, episode, occurrence):l) =
+sortByRelevanceToJSON :: [(Int, Int, Int)] -> String
+sortByRelevanceToJSON [] = ""
+sortByRelevanceToJSON ((season, episode, occurrence):l) =
     let tmpList = changeList2 ((season, episode, occurrence):l) in
     let sortedList = reverse $ DL.sort tmpList in
     "{" ++ relevanceToJSON sortedList ++ "}"
     
--- sortByRelevance [(1,2,3),(1,1,3),(1,3,4),(2,1,4),(2,2,3),(2,3,4)] -> "{\"1_3\":4,\"2_1\":4,\"2_3\":4,\"1_1\":3,\"1_2\":3,\"2_2\":3}"
+-- sortByRelevanceToJSON [(1,2,3),(1,1,3),(1,3,4),(2,1,4),(2,2,3),(2,3,4)] -> {"1_3" : 4, "2_1" : 4, "2_3" : 4, "1_1" : 3, "1_2" : 3, "2_2" : 3}
