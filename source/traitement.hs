@@ -19,18 +19,16 @@ reconstructionURL =
 
 {-
     let args = "jsonSansNuageDeMots.json" in
---    let luj = map (LUJ.lireURLJson) $ map (LUJ.lireURLJson) lae in
-    let lj = LJ.lireJsonv6 args in
+    let luj = map (LUJ.lireURLJson) $ map (LUJ.lireURLJson) lae in
     writeFile "tmp.txt" lj
 
 -}
 
 traitementStatistiques :: String -> IO ()
 traitementStatistiques resume =
---    let resume = "\"Jon Arryn, the Hand of the King, is dead. King Robert Baratheon plans to ask his oldest friend, Eddard Stark, to take Jon's place. Across the sea, Viserys Targaryen plans to wed his sister to a nomadic warlord in exchange for an army.\"" in
+--    let resume = "\"Jon, the Hand King, an army.\"" in
     let gwf = GWF.getWordsFile resume in
     let ps = DT.unpack . DT.toLower . DT.pack $ PS.porterStemmer gwf in
---    let ps = PS.porterStemmer gwf in
     Stat.statistics ps "statistics.txt"
 
 traitementKeyWord :: String -> String -> Int
@@ -38,8 +36,6 @@ traitementKeyWord keyword resume =
     let gwf = GWF.getWordsFile resume in
     let kw = (DT.unpack . DT.toLower . DT.pack) (lines (PS.porterStemmer keyword) !! 0) in
     let ps = DT.unpack . DT.toLower . DT.pack $ PS.porterStemmer gwf in
---    let kw = lines (PS.porterStemmer keyword) !! 0 in
---    let ps = PS.porterStemmer gwf in
     KWO.keyWordOccurrence kw ps
 
 
