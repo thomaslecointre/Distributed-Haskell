@@ -19,18 +19,16 @@ reconstructionURL =
 
 {-
     let args = "jsonSansNuageDeMots.json" in
---    let luj = map (LUJ.lireURLJson) $ map (LUJ.lireURLJson) lae in
-    let lj = LJ.lireJsonv6 args in
+    let luj = map (LUJ.lireURLJson) $ map (LUJ.lireURLJson) lae in
     writeFile "tmp.txt" lj
 
 -}
 
 traitementStatistiques :: String -> IO ()
 traitementStatistiques resume =
---    let resume = "\"Jon Arryn, the Hand of the King, is dead. King Robert Baratheon plans to ask his oldest friend, Eddard Stark, to take Jon's place. Across the sea, Viserys Targaryen plans to wed his sister to a nomadic warlord in exchange for an army.\"" in
+--    let resume = "\"Jon, the Hand King, an army.\"" in
     let gwf = GWF.getWordsFile resume in
     let ps = DT.unpack . DT.toLower . DT.pack $ PS.porterStemmer gwf in
---    let ps = PS.porterStemmer gwf in
     Stat.statistics ps "statistics.txt"
 
 traitementKeyWord :: String -> String -> Int
@@ -38,31 +36,13 @@ traitementKeyWord keyword resume =
     let gwf = GWF.getWordsFile resume in
     let kw = (DT.unpack . DT.toLower . DT.pack) (lines (PS.porterStemmer keyword) !! 0) in
     let ps = DT.unpack . DT.toLower . DT.pack $ PS.porterStemmer gwf in
---    let kw = lines (PS.porterStemmer keyword) !! 0 in
---    let ps = PS.porterStemmer gwf in
     KWO.keyWordOccurrence kw ps
 
 
+-- sort
 
+-- chronogicalSortToJSON [[(1,1,2),(1,2,3)],[(2,1,4),(2,2,3)],[(3,1,2),(3,2,1)]] -> {"1" : [2,3], "2" : [4,3], "3" : [2,1]}
 
+-- sortBySeasonToJSON [[(1,1,2),(1,2,3)],[(2,1,4),(2,2,3)],[(3,1,2),(3,2,1)]] -> {"1" : [{ "2" : 3 }, { "1" : 2 }], "2" : [{ "1" : 4 }, { "2" : 3 }], "3" : [{ "1" : 2 }, { "2" : 1 }]}
 
-
-
-
-
-
-
---    lireArgumentMaitre.hs www.test.org 8080 Ned GoT 10 10 10 10 7
-    -- -> [["www.test.org","8080","Ned","GoT","1","10"], ["www.test.org","8080","Ned","GoT","2","10"], ... ["www.test.org","8080","Ned","GoT","5","7"]]
---    lireArgumentEsclave.hs www.test.org 8080 Ned GoT 1 10
-    -- -> [("Ned", "www.test.org:8080/GoT/1/1"),("Ned", "www.test.org:8080/GoT/1/2"), ... ("Ned", "www.test.org:8080/GoT/1/10")]
---    lireURLJson.hs www.test.org:8080/GoT/1/1
-    -- -> tmp.json ou jsonSansNuageDeMots.json
---    lireJsonv6.hs jsonSansNuageDeMots.json
-    -- -> tmp2.txt
---    getWordsFile.hs tmp2.txt
-    -- -> tmp3.txt
---    PorterStemmer.hs tmp3.txt
-    -- -> tmp4.txt
---    Statistics2.hs tmp4.txt
-    -- -> statistics.txt
+-- sortByRelevanceToJSON [(1,2,3),(1,1,3),(1,3,4),(2,1,4),(2,2,3),(2,3,4)] -> {"1_3" : 4, "2_1" : 4, "2_3" : 4, "1_1" : 3, "1_2" : 3, "2_2" : 3}
