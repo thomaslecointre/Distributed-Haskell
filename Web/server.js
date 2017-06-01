@@ -5,9 +5,6 @@ var fs = require('fs');
 var path = require('path');
 var app = express();
 var imdb = require('./imdb');
-var haskell = require('./haskell');
-
-imdb.query('game of thrones');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -20,9 +17,9 @@ app.set('views', path.join(__dirname, 'public', 'views'));
 
 app.get('/search/:series/:keyword', function (req, res) {
   console.log('Request made for search result');
-  var series = req.params.search;
-  res.end(search);
-  imdb.query(search);
+  var series = req.params.series;
+  var keyword = req.params.keyword;
+  imdb.query(series, keyword, res);
 });
 
 app.get('/', function (req, res) {
