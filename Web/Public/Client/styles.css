@@ -3,42 +3,127 @@
 }
 
 body {
-	background-color : #c5cae9;
+	display: block;
+	background-color : #e8eaf6;
+	margin: 0vh;
+	padding: 0vh;
+}
+
+#content {
+	display: block;
+	margin: 0vh;
+	padding: 0vh;
+}
+
+#aside {
+	width: 15%;
+	background-color: #c5cae9;
+	float: left;
+	height: 100vh;
+}
+
+#aside div {
+	box-sizing: border-box;
+	border-bottom: 0.1vh solid white;
+	background-color: #c5cae9;
+	transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+	margin: 0%;
+	padding: 10%;
+	font-size: 150%;
+	overflow: hidden;
+}
+
+#aside div:hover {
+	background-color: #3f51b5 ;
+	color: white;
+	cursor : pointer;
+}
+
+#language {
+	font-size: 80% !important;
+	font-weight: bold;
+	border: none !important;
+	padding: 0vh !important;
+	text-align: center;
+}
+
+#language div {
+	border: none !important;
+	width: 50%;
+}
+
+#language:hover {
+	color: black !important;
+}
+
+#language div:hover {
+	color: black !important;
+	background-color: #f44336 !important;
+}
+
+#en {
+	float: left;
+}
+
+#fr {
+	float: right;
+}
+
+#chronological {
+	border-top: 0.1vh solid white;
 }
 
 #search {
-	margin: auto;
+	float: left;
 	text-align: center;
+	width: 85%;
+	height: 30%;
+	margin: 0vh;
 }
 
-#search div {
-	margin: 20px;
+#search input, button {
+	display: block;
+	margin: 2% auto 2% auto;
+	padding: 1%;
 }
 
 #search-series {
-	height: 100px;
-	width: 800px;
-	font-size: 50px;
+	width: 90%;
+	height: 40%;
+	font-size: 300%;
 	text-align: center;
-	border-radius : 3px;
+	border-radius : .2vh;
 	border : none;
 }
 
 #search-keyword {
-	height: 50px;
-	width: 300px;
-	font-size: 25px;
+	width: 35%;
+	height: 40%;
+	font-size: 200%;
 	text-align: center;
-	border-radius : 3px;
+	border-radius : .2vh;
 	border : none;
 }
 
-#submit {
-	background-color : #1a237e;
-	border-radius : 3px;
+button {
+	background-color : #3f51b5 ;
+	border-radius : .2vh;
 	color : white;
 	border : none;
-	font-size: 16px;
-	height : 30px;
-	width : 90px;
+	font-size: 150%;
+	height : 10%;
+	width : 20%;
+	box-shadow: 0 0.1vh 0.3vh rgba(0,0,0,0.12), 0 0.1vh 0.2vh rgba(0,0,0,0.24);
+  	transition: all 0.3s cubic-bezier(.25,.8,.25,1);
 }
+
+button:hover {
+  box-shadow : 0 0.7vh 1.4vh rgba(0,0,0,0.25), 0 1.0vh 1.0vh rgba(0,0,0,0.22);
+  cursor : pointer;
+}
+
+#text-area {
+	text-align: center;
+	font-size: 200%;
+}
+

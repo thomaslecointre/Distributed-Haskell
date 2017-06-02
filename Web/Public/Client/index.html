@@ -3,30 +3,46 @@
 
 <head>
   <title>Haskell-Search</title>
-  <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  <link rel="stylesheet" type="text/css" href="Public/Client/styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=0.8">
+  <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
+  <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+  <link rel='stylesheet' type='text/css' href='Public/Client/styles.css' />
 </head>
 
 <body>
-  
-  <div id="search">
-    <div>
-      <input id="search-series" type="text" placeholder="Ex: Game of Thrones" />
+  <div id='content'>
+    <div id='aside'>
+      <div id='language'>
+        <div id='en'>
+          EN
+        </div>
+        <div id='fr'>
+          FR
+        </div>
+      </div>
+      <div id="chronological">
+        Chronological
+      </div>
+      <div id="per-season">
+        Per Season
+      </div>
+      <div id="pertinence">
+        Pertinence
+      </div>
     </div>
-    <div>
-      <input id="search-keyword" type="text" placeholder="Ex: Stark" />
+    <div id='search'>
+      <input id='search-series' type='text' placeholder='Ex: Game of Thrones' />
+      <input id='search-keyword' type='text' placeholder='Ex: Stark' />
+      <button id='submit'>Try</button>
     </div>
-    <div>
-      <button id="submit">Try</button>
-    </div>
+    
+  </div>
+  <div id='text-area'>
+      
   </div>
   
-  <div class="text-area">
 
-  </div>
-
-  <script type="text/javascript" src="Public/Client/client.js"></script>
+  <script type='text/javascript' src='public/client/client.js'></script>
   
 </body>
 

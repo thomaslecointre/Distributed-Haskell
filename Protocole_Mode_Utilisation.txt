@@ -1,0 +1,103 @@
+Haskell Search
+Protocole de communication et mode d'emploi
+
+Introduction
+
+Notre plate-forme intitulé Haskell-Search utilise un protocole de communication optimisé pour une faible bande passante. Nous nous sommes
+efforcés de communiquer uniquement ce qui est nécessaire, laissant aux composants de remplir les informations manquantes ou nécessaires.
+
+Notre plate-forme se déploie au minimum sur 2 ordinateurs. Le premier ordinateur abrite le Web Serveur (fonctionnant sous Node JS),
+le Messenger et le Master (la nomenclature des processus haskell est expliquée plus tard). Un Slave correspond à une machine capable 
+d'executer du haskell.
+
+Au préalable il est nécessaire que le Web Server et le Master (processus haskell) soient en route avant que le premier client
+ne se connecte. Chaque Slave doit s’enregistrer auprès du Master en se connectant au port 4444.
+
+Déroulement
+
+1. Le client se connecte au site web, rentre un nom de série, un mot clef (si recherche par mot clef est activée) et lance 
+une tentative de recherche.
+    - Le Web Server doit vérifier qu'un nom de série et un mot clef ont bien été saisis. Sinon, le client est 
+    invité à réessayer.
+    - Le Web Server requête l'api imdb et remplit un dossier (/public/nom_de_serie) plein de JSON si la requête est un succès.
+    Si aucune information est trouvée le Web Server doit demander au client de saisir un autre nom de série.
+
+2. Une requête sur l'api imdb valide lance un processus haskell appelé "Messenger". Le Messenger reçoit comme ordre d'arguments
+    - Le mot clef (s'il y en a), sinon "N/A"
+    - le nom de serie correspondant au nom du dossier créé par le Web Server (Ex: game_of_thrones)
+    - Pour chaque saison, le nombre d'épisodes pour ladite saison.
+
+    Ex: "Ned" "game_of_thrones" "10" "10" "10" "10" ...
+
+3. Le Messenger doit envoyer ces informations au Master sur le port 4445. Ce message prend la forme suivante:
+    "[\"Ned\", \"game_of_thrones\", 10, 10, ...]". Le Messenger doit attendre la suite des instructions venant du Master.
+
+4. Le Master transforme ces données et envoie, à chaque Slave enregistré, un tableau de données correspondant à une saison
+de la série à traîter. Chaque Slave reçoit ces données sur le port 5000. L'adresse IP de chaque Slave est récupéré et connu
+avant même que le Master reçoive l'ordre venant du Messenger. Le troisième et le quatrième argument correspondent respectivement 
+au numéro de la saison et le nombre d'épisodes pour cette saison. Ex: "[\"Ned\", \"game_of_thrones\", 1, 10]"
+
+5. Chaque Slave transforme ces données pour reconstituer #épisodes url de la forme 
+http://haskell-search.net/public/game_of_thrones/1/1 . Cette URL est accompagnée d'une requête GET. 
+La donnée "public" est supposée valide dans la constitution des URL.
+    - Le Web Server retourne un JSON sur succès. Sinon, le Slave doit recommencer la requête jusqu'à recevoir le JSON.
+    - Chaque Slave traîte ses données.
+    - Après traitement, chaque Slave envoie sur le port 4446 du Master un tableau indiquant que les données sont traitées.
+    - Si le client a demandé une étude de mot clef, le Slave renvoie par exemple "[1, 1, 5]" où le premier argument correspond
+    au numéro de la saison, le deuxième argument correspond au numéro de l'épisode et le troisième argument correspond au nombre
+    d'occurrences du mot clef dans la description de l'épisode.
+    - Si le client a demandé une étude statistique le Slave renvoie par exemple "[1, 1, [(\"mot_clef\", #)*]]" où le troisième
+    argument est un tableau de tuples avec comme premier argument un mot contenu dans la description de l'épisode et le 2 argument
+    correspond au nombre d'occurrences de ce mot.
+
+6. Après avoir reçu les données pour une saison, le Master recommence réaffecte une autre saison à un Slave disponible à travailler
+tant qu'il reste des saisons à étudier. Après avoir reçu l'ensemble des données traitées il se met à créer des JSON suivant le type 
+d'étude.
+
+Pour une étude par mot clef il doit fabriquer 3 fichiers JSON indiquant la manière de remplir le template html 
+(.ejs ou .jade à vérifier) présent sur le Web Server. Les modes d'affichage sont
+
+    - chronologique -> On affiche chronologiquement les épisodes. Plus un épisode correspond au mot clef, plus il est "visible"
+    à l'affichage.
+
+        - Le JSON a la forme suivante:
+            {
+                "1" : [2, 5, 6, 8, ...],
+                "2" : [...],
+                ...
+            }
+            Une clef correspond au numéro d'une saison. La valeur est un tableau avec pour chaque indice d'épisode, la pertinence du
+            mot clef.
+
+    - par saison -> Par saison, on affiche les épisodes par ordre descendant de pertinence par rapport au mot clef.
+    
+        - Le JSON a la forme suivante:
+            {
+                "1" : [{"3", 7}, {"7", 6}, {"5", 5}...],
+                "2" : [...],
+                ...
+            }
+            Une clef correspond au numéro d'une saison. La valeur est un tableau d'objets JSON avec comme clef le numéro d'épisode,
+            la valeur est la pertinence de l'épisode par rapport au mot clef.
+
+    - pertinence -> On affiche par ordre descendant de pertinence.
+        - Le JSON a la forme suivante:
+            {
+                "1_2" : 15,
+                "3_7"  : 14,
+                ...
+            }
+            Une clef est un string constitué d'un numéro de saison suivi d'un _ puis d'un numéro d'épisode. La valeur est la pertinence.
+
+Pour une étude statistique, un seul JSON est nécessaire. 
+    - Le JSON a la forme suivante:
+        {
+            "1" : [{ ("mot_clef": #)* }*],
+            "2" : [{ ("mot_clef": #)* }*],
+            ...
+        }
+        Une clef est un numéro de saison. La valeur est un tableau d'objets JSON où à chaque indice d'épisode, on a l'ensemble des
+        couples clefs, valeurs correspondant à un mot de la description et son occurrence.
+
+7. Suite au dépot de ces fichiers JSON, le Master envoie un signe de fin de traitement au Messenger. Le Messenger s'éteigne et le Web
+Server, enregistrant la fin du processus, peut alors remplir le template et envoyer les informations au client.
