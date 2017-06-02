@@ -1,20 +1,23 @@
 import Network
+import System.Exit
 import System.IO
 import System.Environment
 import Numeric
 import Control.Concurrent
+import Data.String
 
 main = do
     xs <- getArgs
-    let p = read (xs !! 0) :: Integer
-    let port = fromInteger p
-    converse port
+    sendOrder 4445 xs
 
-connect :: PortNumber -> IO ()
-connect port = withSocketsDo $ do
-    let message = "Connecting to Master on " ++ (show port)
-    putStrLn message
+sendOrder :: PortNumber -> [String] -> IO ()
+sendOrder port xs = withSocketsDo $ do
+    print $ "Connecting to Master on " ++ (show port)
     handle <- connectTo "localhost" (PortNumber port)
-
-    hPutStrLn handle message
-    hClose handle
+    hSetBuffering handle LineBuffering
+    hPutStrLn handle (show xs)
+    response <- hGetLine handle
+    if response == "KO" 
+        then die "Master was unable to process request"
+        else exitSuccess
+    
