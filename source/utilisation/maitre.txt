@@ -2,6 +2,11 @@ Traitement pour le maître
 
 La version n'est pas celle définie dans le Drive, je m'en occupe après le poster ;)
 
+
+Le maitre doit partager le traitement et trier les résultats !
+
+
+partage du traitement :
 Le maître prend en argument : [String] tel que ["ip","port","keyword","serie","#saison1","#saison2","#saison3"]
 ip = "www.exemple.com"
 port = "8080"
@@ -17,3 +22,7 @@ La fonction utilisée : lireArgumentMaitre
 
 pour l'importer : import qualified LireArgumentMaitre as LAM
 pour l'utiliser : let lam = LAM.lireArgumentMaitre ["ip","port","keyword","serie","7","7","7"] in
+
+
+tri des résultats :
+Les types en entrée sont incorrectes
