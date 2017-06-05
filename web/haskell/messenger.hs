@@ -12,12 +12,14 @@ main = do
 
 sendOrder :: PortNumber -> [String] -> IO ()
 sendOrder port xs = withSocketsDo $ do
-    print $ "Connecting to Master on " ++ (show port)
+    print $ "Connecting to Master @localhost:" ++ (show port)
     handle <- connectTo "localhost" (PortNumber port)
     hSetBuffering handle LineBuffering
     hPutStrLn handle (show xs)
     response <- hGetLine handle
     if response == "KO" 
         then die "Master was unable to process request"
-        else exitSuccess
+        else if response == "OK"
+            then exitSuccess
+            else die "Unexpected failure"
     
