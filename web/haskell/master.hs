@@ -43,6 +43,7 @@ receiveRegistrations registering = do
 handleRegistrations :: Chan NS.SockAddr -> (NS.Socket, NS.SockAddr) -> IO ()
 handleRegistrations registering (socket, sockaddr) = do
     let newAddress = sockaddr
+    print $ "New slave registration from " ++ (show newAddress)
     writeChan registering newAddress
 
 sortRegistrations :: Chan NS.SockAddr -> MVar [NS.SockAddr] -> IO()
