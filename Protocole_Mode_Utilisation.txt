@@ -43,10 +43,10 @@ La donnée "public" est supposée valide dans la constitution des URL.
     - Le Web Server retourne un JSON sur succès. Sinon, le Slave doit recommencer la requête jusqu'à recevoir le JSON.
     - Chaque Slave traîte ses données.
     - Après traitement, chaque Slave envoie sur le port 4446 du Master un tableau indiquant que les données sont traitées.
-    - Si le client a demandé une étude de mot clef, le Slave renvoie par exemple "[1, 1, 5]" où le premier argument correspond
+    - Si le client a demandé une étude de mot clef, le Slave renvoie par exemple "[[1, 1, 5]*]" où le premier argument correspond
     au numéro de la saison, le deuxième argument correspond au numéro de l'épisode et le troisième argument correspond au nombre
     d'occurrences du mot clef dans la description de l'épisode.
-    - Si le client a demandé une étude statistique le Slave renvoie par exemple "[1, 1, [(\"mot_clef\", #)*]]" où le troisième
+    - Si le client a demandé une étude statistique le Slave renvoie par exemple "[[1, 1, [(\"mot_clef\", #)*]]*]" où le troisième
     argument est un tableau de tuples avec comme premier argument un mot contenu dans la description de l'épisode et le 2 argument
     correspond au nombre d'occurrences de ce mot.
 

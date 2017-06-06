@@ -1,5 +1,6 @@
 import qualified Network as N
 import qualified Network.Socket as NS
+import qualified Utils as U
 import System.IO
 import System.Environment
 import Control.Concurrent
@@ -14,7 +15,7 @@ main = do
     forkIO $ receiveOrders orders
     forkIO $ receiveRegistrations registering
     forkIO $ sortRegistrations registering registered
-    -- forkIO $ sendOrders orders registered
+    forkIO $ sendOrders orders registered
     -- forkIO $ receiveWork
     forever $ do
         putStrLn "Master is active..."
@@ -44,19 +45,9 @@ receiveRegistrations registering = do
 handleRegistrations :: Chan String -> (NS.Socket, NS.SockAddr) -> IO ()
 handleRegistrations registering (socket, sockaddr) = do
     let socketAddress = sockaddr
-    let ipAddress = stripIP (show socketAddress)
+    let ipAddress = U.stripIP socketAddress
     print $ "New slave registering from " ++ ipAddress
     writeChan registering ipAddress
-
-stripIP :: String -> String
-stripIP socketAddress = do
-    let elements = words (map whiteSpace socketAddress)
-    elements !! 2
-
-whiteSpace :: Char -> Char
-whiteSpace ':' = ' '
-whiteSpace ']' = ' '
-whiteSpace c = c
 
 sortRegistrations :: Chan String -> MVar [String] -> IO()
 sortRegistrations registering registered = do
@@ -72,10 +63,9 @@ sortRegistrations registering registered = do
             putMVar registered currentlyRegistered
             sortRegistrations registering registered
 
-{--
 sendOrders :: MVar [String] -> MVar [NS.SockAddr] -> IO ()
 sendOrders orders registered = do
     orders' <- takeMVar orders -- Needs to be placed back
-    registered' <- takeMVar registered-- Needs to be placed back
-    let numberOfRegistered = count registered'
---}
+    registered' <- takeMVar registered -- Needs to be placed back
+    let numberOfRegistered = length registered'
+
