@@ -4,7 +4,7 @@ module Traitementv3 where
 
 --master
 import qualified LireArgumentMaitrev2 as LAM
-import qualified Sort as Sort
+import qualified Sortv2 as Sort
 --slave
 import qualified LireArgumentEsclavev3 as LAE
 import qualified GetWordsFilev2 as GWF
@@ -28,23 +28,19 @@ masterShareSeason :: [String] -> [[String]]
 masterShareSeason args = -- ["Ned","GoT","3","3","2"]
     LAM.lireArgumentMaitre args -- [["Ned","GoT","1","3"],["Ned","GoT","2","3"],["Ned","GoT","3","2"]]
 
+masterChronologicalSort :: [[[Int]]] -> String
+masterChronologicalSort seasonEpisodeOccurrence = -- [[[1,1,2],[1,2,3]],[[2,1,4],[2,2,3]],[[3,1,2],[3,2,1]]]
+    Sort.chronogicalSortToJSON seasonEpisodeOccurrence -- {"1" : [2,3], "2" : [4,3], "3" : [2,1]}
+
+masterSortBySeason :: [[[Int]]] -> String
+masterSortBySeason seasonEpisodeOccurrence =
+    Sort.sortBySeasonToJSON seasonEpisodeOccurrence -- {"1" : [{ "2" : 3 }, { "1" : 2 }], "2" : [{ "1" : 4 }, { "2" : 3 }], "3" : [{ "1" : 2 }, { "2" : 1 }]}
+
+masterSortByRelevanceToJson :: [[[Int]]] -> String
+masterSortByRelevanceToJson seasonEpisodeOccurrence =
+    Sort.sortByRelevanceToJSON seasonEpisodeOccurrence -- {"2_1" : 4, "1_2" : 3, "2_2" : 3, "1_1" : 2, "3_1" : 2, "3_2" : 1}
+
 {-
-masterChronologicalSort :: [[Int, Int, Int]] -> String
-masterChronologicalSort seasonEpisodeOccurrence = -- [[1,1,2],[1,2,3],[1,3,1],[1,4,0]]
-    Sort.chronogicalSort seasonEpisodeOccurrence -- "1" : [2,3], "2" : [4,3], "3" : [2,1]}
-
-masterSortBySeason :: [[Int, Int, Int]] -> String
-masterSortBySeason seasonEpisodeOccurrence = -- [[1,1,2],[1,2,3],[1,3,1],[1,4,0]]
-    Sort.sortBySeason seasonEpisodeOccurrence -- {"1" : [{ "2" : 3 }, { "1" : 2 }], "2" : [{ "1" : 4 }, { "2" : 3 }], "3" : [{ "1" : 2 }, { "2" : 1 }]}
-
-masterSortByRelevanceToJson :: [[Int, Int, Int]] -> String
-masterSortByRelevanceToJson = -- [[1,1,2],[1,2,3],[1,3,1],[1,4,0]]
-    let args = ["ip","port","Ned","GoT","1","3"] in
-    -- let args = ["ip","port","Jon","GoT","1","3"] in
-    let lae = LAE.lireArgumentEsclave args in -- [("Ned",1,1,"ip:port/GoT/1/1"),("Ned",1,2,"ip:port/GoT/1/2"),("Ned",1,3,"ip:port/GoT/1/3")]
-    let seo = map slaveProcessEpisode lae in
-    Sort.sortByRelevanceToJSON seo -- {"1_3" : 4, "2_1" : 4, "2_3" : 4, "1_1" : 3, "1_2" : 3, "2_2" : 3}
-
 --masterStatisticsProcessEpisode :: (String, Int, Int, String) -> IO ()
 masterStatisticsProcessEpisode (keyword, season, episode, url) =
     -- let luj = LUJ.lireURL url in -- "\"Jon, the Hand of the King, ... an army.\""
