@@ -32,6 +32,7 @@ handleOrders socket orders = do
     hSetBuffering handle LineBuffering
     code <- hGetLine handle
     let order = read code :: [String]
+    print $ "Received orders : " ++ (show order)
     putMVar orders order
 
 receiveRegistrations :: Chan String -> IO ()
