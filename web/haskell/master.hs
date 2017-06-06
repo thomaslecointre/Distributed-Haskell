@@ -34,19 +34,30 @@ handleOrders socket orders = do
     let order = read code :: [String]
     putMVar orders order
 
-receiveRegistrations :: Chan NS.SockAddr -> IO ()
+receiveRegistrations :: Chan String -> IO ()
 receiveRegistrations registering = do
     socket <- N.listenOn (N.PortNumber 4444)
     putStrLn "Receiving registrations on 4444..."
     forever $ NS.accept socket >>= (handleRegistrations registering)
 
-handleRegistrations :: Chan NS.SockAddr -> (NS.Socket, NS.SockAddr) -> IO ()
+handleRegistrations :: Chan String -> (NS.Socket, NS.SockAddr) -> IO ()
 handleRegistrations registering (socket, sockaddr) = do
-    let newAddress = sockaddr
-    print $ "New slave registration from " ++ (show newAddress)
-    writeChan registering newAddress
+    let socketAddress = sockaddr
+    let ipAddress = stripIP (show socketAddress)
+    print $ "New slave registering from " ++ ipAddress
+    writeChan registering ipAddress
 
-sortRegistrations :: Chan NS.SockAddr -> MVar [NS.SockAddr] -> IO()
+stripIP :: String -> String
+stripIP socketAddress = do
+    let elements = words (map whiteSpace socketAddress)
+    elements !! 2
+
+whiteSpace :: Char -> Char
+whiteSpace ':' = ' '
+whiteSpace ']' = ' '
+whiteSpace c = c
+
+sortRegistrations :: Chan String -> MVar [String] -> IO()
 sortRegistrations registering registered = do
     newAddress <- readChan registering
     registered' <- takeMVar registered
@@ -55,7 +66,9 @@ sortRegistrations registering registered = do
             putMVar registered registered'
             sortRegistrations registering registered
         else do
-            putMVar registered (registered' ++ [newAddress])
+            let currentlyRegistered = registered' ++ [newAddress]
+            print $ "Slaves currently registered : " ++ (show currentlyRegistered)
+            putMVar registered currentlyRegistered
             sortRegistrations registering registered
 
 {--
