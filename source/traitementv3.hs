@@ -40,6 +40,8 @@ masterSortByRelevanceToJson :: [[[Int]]] -> String
 masterSortByRelevanceToJson seasonEpisodeOccurrence =
     Sort.sortByRelevanceToJSON seasonEpisodeOccurrence -- {"2_1" : 4, "1_2" : 3, "2_2" : 3, "1_1" : 2, "3_1" : 2, "3_2" : 1}
 
+masterStatistics :: [String] -> String
+masterStatistics l = Stat.concatStatistics l
 {-
 --masterStatisticsProcessEpisode :: (String, Int, Int, String) -> IO ()
 masterStatisticsProcessEpisode (keyword, season, episode, url) =
@@ -51,9 +53,9 @@ masterStatisticsProcessEpisode (keyword, season, episode, url) =
 
 -- masterStatisticsProcess :: [IO ()]
 masterStatisticsProcess = do
-    let args = ["ip","port","Ned","GoT","1","3"]
+    let args = ["N/A","Ned","GoT","1","3"]
     let lae = LAE.lireArgumentEsclave args -- [("Ned",1,1,"ip:port/GoT/1/1"),("Ned",1,2,"ip:port/GoT/1/2"),("Ned",1,3,"ip:port/GoT/1/3")]
-    map slaveStatisticsProcessEpisode lae
+    map masterStatisticsProcessEpisode lae
 -}
 
 
@@ -95,8 +97,13 @@ slaveProcess =
     map lireURL lae
 -}
 
-
-
+{-
+slaveStat = do
+    lireURL
+    getWordsFile
+    Stemming
+    Stat.statisticsSeasonEpisodeText
+-}
 
 
 
