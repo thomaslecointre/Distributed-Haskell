@@ -11,7 +11,7 @@ module.exports = {
         console.log('Processing request...');
         res.end('Processing request...');
 
-        var title = things['title'];
+        var title = things.title;
         var urlTitle = title.toLowerCase().split(' ').join('_');
         var path = require('path');
         var seriesPath = path.join(__dirname, 'public', urlTitle);
@@ -25,10 +25,15 @@ module.exports = {
 
           moreThings.forEach(function(item, index) {
 
-            imdb.getById(item['imdbid'], {apiKey: '46e82526'}, (err, idThings) => {
+            imdb.getById(item.imdbid, {apiKey: '46e82526'}, (err, idThings) => {
+			
+			if(!idThings || err) {
+				console.log('An error has occurred. Please try again.');
+				res.end('An error has occurred. Please try again.');
+			} else {
 
-              var season = idThings['season'].toString();
-              var episode = idThings['episode'].toString();
+              var season = idThings.season;
+              var episode = idThings.episode;
 
               if(!fs.existsSync(path.join(seriesPath, season))) {
                 fs.mkdirSync(path.join(seriesPath, season));
@@ -42,7 +47,8 @@ module.exports = {
               if(!fs.existsSync(episodePath)) {
                 fs.appendFileSync(episodePath, JSON.stringify(idThings), { flag : 'a+' });
               }
-
+			}
+			
             });
             
 
