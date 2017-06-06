@@ -15,7 +15,7 @@ main = do
     forkIO $ receiveOrders orders
     forkIO $ receiveRegistrations registering
     forkIO $ sortRegistrations registering registered
-    forkIO $ sendOrders orders registered
+    -- forkIO $ sendOrders orders registered
     -- forkIO $ receiveWork
     forever $ do
         putStrLn "Master is active..."
@@ -62,10 +62,10 @@ sortRegistrations registering registered = do
             print $ "Slaves currently registered : " ++ (show currentlyRegistered)
             putMVar registered currentlyRegistered
             sortRegistrations registering registered
-
+{--
 sendOrders :: MVar [String] -> MVar [NS.SockAddr] -> IO ()
 sendOrders orders registered = do
     orders' <- takeMVar orders -- Needs to be placed back
     registered' <- takeMVar registered -- Needs to be placed back
     let numberOfRegistered = length registered'
-
+--}
