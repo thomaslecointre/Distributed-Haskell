@@ -6,19 +6,27 @@ $(document).ready(function () {
 
     en.css('background-color', '#f44336');
     
-    en.click(function() {
-        if(!englishUsed) {
+    en.click(function () {
+        if (!englishUsed) {
             englishUsed = true;
             en.css('background-color', '#f44336');
             fr.css('background-color', '#c5cae9');
+            $('#chronological').text('Chronological');
+            $('#per-season').text('Per Season');
+            $('#pertinence').text('Pertinence');
+            $('#submit').text('Try');
         }
     });
 
-    fr.click(function() {
-        if(englishUsed) {
+    fr.click(function () {
+        if (englishUsed) {
             englishUsed = false;
             fr.css('background-color', '#f44336');
             en.css('background-color', '#c5cae9');
+            $('#chronological').text('Chronologique');
+            $('#per-season').text('Par Saison');
+            $('#pertinence').text('Pertinence');
+            $('#submit').text('Essayer');
         }
     });
 
@@ -27,7 +35,7 @@ $(document).ready(function () {
     
     series.click(function () {
         var style = series.attr('style');
-        if(typeof style !== typeof undefined && style !== false) {
+        if (typeof style !== typeof undefined && style !== false) {
             series.val('');
             console.log('Removing all previous style overrides on series elements');
             series.removeAttr('style');
@@ -36,7 +44,7 @@ $(document).ready(function () {
 
     keyword.click(function () {
         var style = keyword.attr('style');
-        if(typeof style !== typeof undefined && style !== false) {
+        if (typeof style !== typeof undefined && style !== false) {
             keyword.val('');
             console.log('Removing all previous style overrides on keyword elements');
             keyword.removeAttr('style');
@@ -44,19 +52,19 @@ $(document).ready(function () {
     });
 
     $('#submit').click(function (event) {
-        if(series.val() !== '') {
-            if(keyword.val() !== '') {
+        if (series.val() !== '') {
+            if (keyword.val() !== '') {
                 var keywordRegex = /[Nn]\/[Aa]/;
-                if(keywordRegex.test(keyword.val())) {
+                if (keywordRegex.test(keyword.val())) {
                     keyword.css('color', 'red');
                     keyword.val('Enter a valid keyword');
                 } else {
                     $.ajax({
-                    type : 'GET',
-                    url : '/search/' + series.val() + '/' + keyword.val(),
-                    success : function (data) {
-                        $('#text-area').text(data.toString());
-                    }
+                        type : 'GET',
+                        url : '/search/' + series.val() + '/' + keyword.val(),
+                        success : function (data) {
+                            $('#text-area').text(data.toString());
+                        }
                     });
                 }
             } else {
