@@ -10,8 +10,12 @@ main = do
     xs <- getArgs
     sendOrder 4445 xs
 	
--- |Sends the order received from web server to master haskell process.
-sendOrder :: PortNumber -> [String] -> IO ()
+{-|
+    Sends the order received from web server to master haskell process.
+-}
+sendOrder   :: PortNumber   -- ^ The port number used for communicating with master haskell process
+            -> [String]     -- ^ Arguments received in main from web server
+            -> IO ()
 sendOrder port xs = withSocketsDo $ do
     print $ "Connecting to Master @localhost:" ++ (show port)
     handle <- connectTo "localhost" (PortNumber port)

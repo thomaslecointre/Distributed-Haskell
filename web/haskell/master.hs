@@ -23,7 +23,9 @@ main = do
         threadDelay 5000000
 
 -- |Receives connections from messengers
-receiveOrders :: Chan [String] -> Chan String -> IO ()
+receiveOrders   :: Chan [String]    -- ^ Channel used for broadcasting orders across threads
+                -> Chan String      -- ^ Channel used for broadcasting status of work            
+                -> IO ()
 receiveOrders orders workStatus = do
     socket <- N.listenOn (N.PortNumber 4445)
     putStrLn "Receiving orders on 4445..."
@@ -33,7 +35,10 @@ receiveOrders orders workStatus = do
 	Reads order from messenger and broadcasts order to orders channel. 
 	Upon order's completion or failure, the function sends a status reply to messenger.
 -}
-handleOrders :: Chan [String] -> Chan String -> (N.Handle, N.HostName, N.PortNumber) -> IO ()
+handleOrders    :: Chan [String]                        -- ^ Channel used for broadcasting orders across threads
+                -> Chan String                          -- ^ Channel used for broadcasting status of work
+                -> (N.Handle, N.HostName, N.PortNumber) -- ^ Returned by N.accept method
+                -> IO ()
 handleOrders orders workStatus (handle, hostName, portNumber) = do
     hSetBuffering handle LineBuffering
     code <- hGetLine handle
@@ -44,20 +49,30 @@ handleOrders orders workStatus (handle, hostName, portNumber) = do
     hPutStrLn handle status 
     hClose handle
 
-receiveRegistrations :: Chan String -> IO ()
+-- |Opens port no. 4444 for slave registration
+receiveRegistrations    :: Chan String -- ^ Channel used for broadcasting registering slaves
+                        -> IO ()
 receiveRegistrations registering = do
     socket <- N.listenOn (N.PortNumber 4444)
     putStrLn "Receiving registrations on 4444..."
     forever $ NS.accept socket >>= (handleRegistrations registering)
-
-handleRegistrations :: Chan String -> (NS.Socket, NS.SockAddr) -> IO ()
+    
+-- |Receives connections from registering slaves
+handleRegistrations     :: Chan String              -- ^ Channel used for broadcasting registering slaves
+                        -> (NS.Socket, NS.SockAddr) -- ^ Returned by NS.accept method
+                        -> IO ()
 handleRegistrations registering (socket, sockaddr) = do
     let socketAddress = sockaddr
     let ipAddress = U.stripIP socketAddress
     print $ "New slave registering from " ++ ipAddress
     writeChan registering ipAddress
 
-sortRegistrations :: Chan String -> MVar [String] -> IO()
+{-|
+    Sorts registering slaves by ensuring that there are no duplicate IPs in slave IP address table
+-}
+sortRegistrations   :: Chan String      -- ^ Channel used for broadcasting registering slaves
+                    -> MVar [String]    -- ^ Variable containing all registered slaves
+                    -> IO()             
 sortRegistrations registering registered = do
     newAddress <- readChan registering
     registered' <- takeMVar registered
@@ -71,9 +86,12 @@ sortRegistrations registering registered = do
             putMVar registered currentlyRegistered
             sortRegistrations registering registered
 
-sendOrders :: Chan [String] -> MVar [NS.SockAddr] -> IO ()
+-- |Checks if slaves are present. If so, orders are dispatched to slaves.          
+sendOrders  :: Chan [String] -- ^ Channel used for broadcasting orders across threads
+            -> MVar [String] -- ^ Variable containing all registered slaves
+            -> IO ()
 sendOrders orders registered = do
-    registered' <- takeMVar registered -- Needs to be placed back
+    registered' <- takeMVar registered
     let numberOfRegistered = length registered'
     if numberOfRegistered > 0
         then do
@@ -81,26 +99,26 @@ sendOrders orders registered = do
             let parsedOrders = OD.parseArguments orders' numberOfRegistered
             dispatchOrders parsedOrders registered'
             putMVar registered registered'
-        else putStrLn "No slaves available!"
-
-{-
-    Parsed orders
-    IP table
--}
-dispatchOrders :: [[String]] -> [String] -> IO ()
+            sendOrders orders registered
+        else do
+            putMVar registered registered'
+            putStrLn "No slaves available!"
+            sendOrders orders registered
+            
+-- |Dispatches orders to all slaves
+dispatchOrders  :: [[String]] -- ^ Parsed orders
+                -> [String]   -- ^ slave IP address table
+                -> IO ()
 dispatchOrders (x:xs) (y:ys) = do
 	dispatchOrder x y
 	dispatchOrders xs ys
 
-{-
-    Order
-    IP Address
--}
-dispatchOrder :: [String] -> String -> IO ()
+-- |Dispatches order to a slave
+dispatchOrder   :: [String] -- ^ Order
+                -> String   -- ^ IP address of a particular slave  
+                -> IO ()
 dispatchOrder o a = do
     handle <- N.connectTo a (N.PortNumber 5000)
     hSetBuffering handle LineBuffering
     handle hPutStrLn (show o)
     hClose handle
-	
-receiveWork :: 

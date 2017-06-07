@@ -25,6 +25,7 @@ receiveOrder :: Handle -> Chan [[String]] -> IO ()
 receiveOrder handle incomingOrder = do
     code <- hGetLine handle
 	let order = read code :: [[String]]
+    print $ "Order received : " ++ (show order)
     writeChan incomingOrder order
     receiveOrder handle incomingOrder
 
