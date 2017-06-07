@@ -68,19 +68,46 @@ data Serie = Serie { season :: Int, name :: String, episode :: Int, plot :: Stri
 instance FromJSON Serie
 instance ToJSON Serie
 
-slaveArgs args =
-    --let args = [["Ned","GoT","1","3"],["Ned","GoT","2","3"]] in
-    let lae = map LAE.lireArgumentEsclave args in
-    print lae
-    --map lireURL lae
+{-
+    Entree :
+        - [["Ned","GoT","1","3"],["Ned","GoT","2","3"]] (1er tableau pour l'esclave, 2e pour la saison, (keyword, serie, numero saison, nombre episode) )
+    Sortie :
+        [[[Int]]] (1er tableau pour l'esclave, 2e pour la saison, (saison, episode, occurrence) )
+-}
+--process :: [[String]] -> [[[Int]]]
+process args =
+    let lae = map LAE.lireArgumentEsclave args in -- [["Ned","GoT","1","3"],["Ned","GoT","2","3"]]
+    map processPerSeason lae
 
-slaveProcess keyword season episode req =
-    --let (keyword, season, episode, req) = ("jon", 1, 1, "Jon the Hand of the King ... an army") in
-    let gwf = GWF.getWordsFile req in
-    --let gwf = GWF.getWordsFile  $ (show.plot) req  -- "Jon the Hand of the King ... an army"
+
+
+--processPerSeason :: [String] -> [[Int]]
+processPerSeason l =
+    map processPerEpisode l -- [("jon",1,1,"jon"),("jon",1,1,"jon jon"),("jon",1,1,"jon jon jon")]
+
+--processPerEpisode :: (String, Int, Int, String) -> [Int]
+processEachEpisode (keyword, season, episode,url) = -- ("jon",1,1,"jon jon")
+    --let text = lireURL url in
+    let text = "jon jon" in
+    stemmingProcess (keyword, season, episode, text)
+
+
+{-
+    Entree :
+        - keyword
+        - season
+        - episode
+        - text
+        ex : ("jon", 1, 1, "Jon the Hand of the King ... an army")
+    Sortie :
+        [Int] (season, episode, occurrence)
+-}
+--stemmingProcess :: (String, Int, Int, String) -> [Int]
+stemmingProcess (keyword, season, episode, text) = --let (keyword, season, episode, req) = ("jon", 1, 1, "Jon the Hand of the King ... an army") in
+    let gwf = GWF.getWordsFile text in
     let kw = (DT.unpack . DT.toLower . DT.pack) (lines (PS.porterStemmer keyword) !! 0) in -- root of the keyword
     let ps = DT.unpack . DT.toLower . DT.pack $ PS.porterStemmer gwf in -- "jon\nhand\nking\n...\narmi\n"
-    (season:episode:(KWO.keyWordOccurrence kw ps):[])
+    [season,episode,KWO.keyWordOccurrence kw ps]
 
 
 {-
