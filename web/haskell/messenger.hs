@@ -9,7 +9,8 @@ import Data.String
 main = do
     xs <- getArgs
     sendOrder 4445 xs
-
+	
+-- |Sends the order received from web server to master haskell process.
 sendOrder :: PortNumber -> [String] -> IO ()
 sendOrder port xs = withSocketsDo $ do
     print $ "Connecting to Master @localhost:" ++ (show port)

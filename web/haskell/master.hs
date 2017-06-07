@@ -9,33 +9,40 @@ import Data.String
 import Control.Monad
 
 main = do
-    orders <- newEmptyMVar
+    orders <- newChan
     registering <- newChan
     registered <- newMVar []
-    workStatus <- newEmptyMVar
-    forkIO $ receiveOrders orders
+    workStatus <- newChan
+    forkIO $ receiveOrders orders workStatus
     forkIO $ receiveRegistrations registering
     forkIO $ sortRegistrations registering registered
-    -- forkIO $ sendOrders orders registered
-    -- forkIO $ receiveWork
+    forkIO $ sendOrders orders registered
+    forkIO $ receiveWork workStatus
     forever $ do
         putStrLn "Master is active..."
         threadDelay 5000000
 
-receiveOrders :: MVar [String] -> IO ()
-receiveOrders orders = do
+-- |Receives connections from messengers
+receiveOrders :: Chan [String] -> Chan String -> IO ()
+receiveOrders orders workStatus = do
     socket <- N.listenOn (N.PortNumber 4445)
     putStrLn "Receiving orders on 4445..."
-    handleOrders socket orders
-    
-handleOrders :: N.Socket -> MVar [String] -> IO ()
-handleOrders socket orders = do
-    (handle, host, port) <- N.accept socket
+    forever $ N.accept socket >>= handleOrders orders workStatus
+   
+{-|
+	Reads order from messenger and broadcasts order to orders channel. 
+	Upon order's completion or failure, the function sends a status reply to messenger.
+-}
+handleOrders :: Chan [String] -> Chan String -> (N.Handle, N.HostName, N.PortNumber) -> IO ()
+handleOrders orders workStatus (handle, hostName, portNumber) = do
     hSetBuffering handle LineBuffering
     code <- hGetLine handle
     let order = read code :: [String]
     print $ "Received orders : " ++ (show order)
-    putMVar orders order
+    writeChan orders order
+    status <- readChan workStatus -- OK or KO
+    hPutStrLn handle status 
+    hClose handle
 
 receiveRegistrations :: Chan String -> IO ()
 receiveRegistrations registering = do
@@ -64,29 +71,26 @@ sortRegistrations registering registered = do
             putMVar registered currentlyRegistered
             sortRegistrations registering registered
 
-sendOrders :: MVar [String] -> MVar [NS.SockAddr] -> IO ()
+sendOrders :: Chan [String] -> MVar [NS.SockAddr] -> IO ()
 sendOrders orders registered = do
-    orders' <- takeMVar orders -- Needs to be placed back
     registered' <- takeMVar registered -- Needs to be placed back
     let numberOfRegistered = length registered'
-    let parsedOrders = OD.ParseArguments orders'
     if numberOfRegistered > 0
-        then dispatchOrders numberOfRegistered parsedOrders registered'
+        then do
+            orders' <- readChan orders
+            let parsedOrders = OD.parseArguments orders' numberOfRegistered
+            dispatchOrders parsedOrders registered'
+            putMVar registered registered'
         else putStrLn "No slaves available!"
 
 {-
-    Number of slaves available
-    IP table
-    Number of seasons
     Parsed orders
+    IP table
 -}
-dispatchOrders :: Int -> [String] -> Int -> [[String]] -> IO ()
-dispatchOrders _ _ 0 _              = putStrLn "All orders dispatched"
-dispatchOrders 0 _ n _              = if n > 0
-                                        then 
-dispatchOrders n (x:xs) m (y:ys)    = do
-                                    dispatchOrder x y
-                                    dispatchOrders n-1 xs m-1 ys
+dispatchOrders :: [[String]] -> [String] -> IO ()
+dispatchOrders (x:xs) (y:ys) = do
+	dispatchOrder x y
+	dispatchOrders xs ys
 
 {-
     Order
@@ -95,5 +99,8 @@ dispatchOrders n (x:xs) m (y:ys)    = do
 dispatchOrder :: [String] -> String -> IO ()
 dispatchOrder o a = do
     handle <- N.connectTo a (N.PortNumber 5000)
+    hSetBuffering handle LineBuffering
     handle hPutStrLn (show o)
     hClose handle
+	
+receiveWork :: 
