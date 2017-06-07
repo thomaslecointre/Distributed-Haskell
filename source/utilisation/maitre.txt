@@ -1,9 +1,7 @@
 Traitement pour le maître
 
-La version n'est pas celle définie dans le Drive, je m'en occupe après le poster ;)
 
-
-Le maitre doit partager le traitement et trier les résultats !
+/!\ nouveau nom : OrderDistribution.hs !!!!!
 
 
 partage du traitement :
@@ -25,4 +23,4 @@ pour l'utiliser : let lam = LAM.lireArgumentMaitre ["ip","port","keyword","serie
 
 
 tri des résultats :
-Les types en entrée sont incorrectes
+Le maître prend en argument le type de tri et [[[Int]]] et renvoie le json
