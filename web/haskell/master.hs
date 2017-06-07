@@ -1,6 +1,7 @@
 import qualified Network as N
 import qualified Network.Socket as NS
 import qualified Utils as U
+import qualified OrderDistribution as OD
 import System.IO
 import System.Environment
 import Control.Concurrent
@@ -62,10 +63,37 @@ sortRegistrations registering registered = do
             print $ "Slaves currently registered : " ++ (show currentlyRegistered)
             putMVar registered currentlyRegistered
             sortRegistrations registering registered
-{--
+
 sendOrders :: MVar [String] -> MVar [NS.SockAddr] -> IO ()
 sendOrders orders registered = do
     orders' <- takeMVar orders -- Needs to be placed back
     registered' <- takeMVar registered -- Needs to be placed back
     let numberOfRegistered = length registered'
---}
+    let parsedOrders = OD.ParseArguments orders'
+    if numberOfRegistered > 0
+        then dispatchOrders numberOfRegistered parsedOrders registered'
+        else putStrLn "No slaves available!"
+
+{-
+    Number of slaves available
+    IP table
+    Number of seasons
+    Parsed orders
+-}
+dispatchOrders :: Int -> [String] -> Int -> [[String]] -> IO ()
+dispatchOrders _ _ 0 _              = putStrLn "All orders dispatched"
+dispatchOrders 0 _ n _              = if n > 0
+                                        then 
+dispatchOrders n (x:xs) m (y:ys)    = do
+                                    dispatchOrder x y
+                                    dispatchOrders n-1 xs m-1 ys
+
+{-
+    Order
+    IP Address
+-}
+dispatchOrder :: [String] -> String -> IO ()
+dispatchOrder o a = do
+    handle <- N.connectTo a (N.PortNumber 5000)
+    handle hPutStrLn (show o)
+    hClose handle

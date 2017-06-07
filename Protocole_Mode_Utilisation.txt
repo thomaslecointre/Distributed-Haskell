@@ -32,27 +32,48 @@ une tentative de recherche.
 3. Le Messenger doit envoyer ces informations au Master sur le port 4445. Ce message prend la forme suivante:
     "[\"Ned\", \"game_of_thrones\", 10, 10, ...]". Le Messenger doit attendre la suite des instructions venant du Master.
 
-4. Le Master transforme ces données et envoie, à chaque Slave enregistré, un tableau de données correspondant à une saison
-de la série à traîter. Chaque Slave reçoit ces données sur le port 5000. L'adresse IP de chaque Slave est récupéré et connu
-avant même que le Master reçoive l'ordre venant du Messenger. Le troisième et le quatrième argument correspondent respectivement 
-au numéro de la saison et le nombre d'épisodes pour cette saison. Ex: "[\"Ned\", \"game_of_thrones\", 1, 10]"
+4. Le Master transforme ces données et envoie, à chaque Slave enregistré, un tableau de tableau de String correspondant à une
+ou plusieurs saisons de la série suivant le résultat du calcul : #saisons = #Slaves * q + r. Chaque Slave reçoit ces données sur le port 5000.
+L'adresse IP de chaque Slave est récupéré et connu avant même que le Master reçoive l'ordre venant du Messenger.
 
-5. Chaque Slave transforme ces données pour reconstituer #épisodes url de la forme 
-http://haskell-search.net/public/game_of_thrones/1/1 . Cette URL est accompagnée d'une requête GET. 
+Arguments :
+    -> Mot clef
+    -> Nom de la série formaté URL
+    -> Numéro de la saison
+    -> Nombre d'épisodes pour cette saison
+
+Ex: "[[\"Ned\", \"game_of_thrones\", 1, 10], [\"Ned\", \"game_of_thrones\", 2, 10]]
+
+5. Chaque Slave transforme ces données pour reconstituer des url de la forme http://185.167.204.218:8081/public/game_of_thrones/1/1 
+
+Cette URL est accompagnée d'une requête GET. 
+
 La donnée "public" est supposée valide dans la constitution des URL.
-    - Le Web Server retourne un JSON sur succès. Sinon, le Slave doit recommencer la requête jusqu'à recevoir le JSON.
+
+Séquence : (Gestion des erreurs non traîtée)
     - Chaque Slave traîte ses données.
     - Après traitement, chaque Slave envoie sur le port 4446 du Master un tableau indiquant que les données sont traitées.
-    - Si le client a demandé une étude de mot clef, le Slave renvoie par exemple "[[1, 1, 5]*]" où le premier argument correspond
-    au numéro de la saison, le deuxième argument correspond au numéro de l'épisode et le troisième argument correspond au nombre
-    d'occurrences du mot clef dans la description de l'épisode.
-    - Si le client a demandé une étude statistique le Slave renvoie par exemple "[[1, 1, [(\"mot_clef\", #)*]]*]" où le troisième
-    argument est un tableau de tuples avec comme premier argument un mot contenu dans la description de l'épisode et le 2 argument
-    correspond au nombre d'occurrences de ce mot.
+    - Si le client a demandé une étude de mot clef, le Slave renvoie : 
+    
+        Arguments : 
+            -> Numéro de la saison
+            -> Numéro de l'épisode
+            -> Nombre d'occurrences du mot clef dans la description de l'épisode
+        
+        Ex : "[[[1, 1, 5]+]+]"
+        La longueur du tableau renvoyé par chaque Slave correspond au nombre de saisons qui ont été traîté par ce Slave.
 
-6. Après avoir reçu les données pour une saison, le Master recommence réaffecte une autre saison à un Slave disponible à travailler
-tant qu'il reste des saisons à étudier. Après avoir reçu l'ensemble des données traitées il se met à créer des JSON suivant le type 
-d'étude.
+    - Si le client a demandé une étude statistique le Slave renvoie :
+
+        Arguments : 
+            -> Numéro de la saison
+            -> Numéro de l'épisode
+            -> (Mot contenu dans la description de l'épisode , Nombre d'occurrences de ce mot) +
+
+        Ex : "[[1, 1, [(\"mot_clef\", #)+]]+]"
+        La longueur du tableau renvoyé par chaque Slave correspond au nombre de saisons qui ont été traîté par ce Slave.
+
+6. Après avoir reçu l'ensemble des données traitées il se met à créer des JSON suivant le type d'étude.
 
 Pour une étude par mot clef il doit fabriquer 3 fichiers JSON indiquant la manière de remplir le template html 
 (.ejs ou .jade à vérifier) présent sur le Web Server. Les modes d'affichage sont
@@ -92,8 +113,8 @@ Pour une étude par mot clef il doit fabriquer 3 fichiers JSON indiquant la mani
 Pour une étude statistique, un seul JSON est nécessaire. 
     - Le JSON a la forme suivante:
         {
-            "1" : [{ ("mot_clef": #)* }*],
-            "2" : [{ ("mot_clef": #)* }*],
+            "1" : [{ ("mot_clef": #)+ }+], Les parenthèses ne représentent pas un tuple (n'existe pas en JSON), cela permet juste d'inférer la multiplicité
+            "2" : [{ ("mot_clef": #)+ }+],
             ...
         }
         Une clef est un numéro de saison. La valeur est un tableau d'objets JSON où à chaque indice d'épisode, on a l'ensemble des
