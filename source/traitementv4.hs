@@ -23,6 +23,11 @@ import Network.HTTP.Types.Status (statusCode)
 
 
 
+main :: IO ()
+main = do
+    let x = process [[""]]
+    print $ show x
+
 
 -- master process
 masterShareSeason :: [String] -> Int -> [[[String]]]
@@ -74,22 +79,45 @@ instance ToJSON Serie
     Sortie :
         [[[Int]]] (1er tableau pour l'esclave, 2e pour la saison, (saison, episode, occurrence) )
 -}
---process :: [[String]] -> [[[Int]]]
-process args =
-    let lae = map LAE.lireArgumentEsclave args in -- [["Ned","GoT","1","3"],["Ned","GoT","2","3"]]
-    map processPerSeason lae
+process :: [[String]] -> [[[Int]]]
+process args = do
+    manager <- newManager defaultManagerSettings
+    -- [["Ned","GoT","1","3"],["Ned","GoT","2","3"]]
+    let lae = map LAE.lireArgumentEsclave args
+    processEachSlave lae
+    
+processEachSlave [] = []
+processEachSlave (x:xs) = (processEachSeason x):(processEachSlave xs)
+    -- processEachSeason $ lae !! 0
 
 
 
---processPerSeason :: [String] -> [[Int]]
-processPerSeason l =
-    map processPerEpisode l -- [("jon",1,1,"jon"),("jon",1,1,"jon jon"),("jon",1,1,"jon jon jon")]
+processEachSeason :: [(String, Int, Int, String)] -> [[Int]]
+processEachSeason [] = []
+processEachSeason (x:xs) = (processEachEpisode x) : (processEachSeason xs) -- [("jon",1,1,"jon"),("jon",1,1,"jon jon"),("jon",1,1,"jon jon jon")]
+    -- processEachEpisode $ l !! 0
 
---processPerEpisode :: (String, Int, Int, String) -> [Int]
-processEachEpisode (keyword, season, episode,url) = -- ("jon",1,1,"jon jon")
-    --let text = lireURL url in
-    let text = "jon jon" in
-    stemmingProcess (keyword, season, episode, text)
+processEachEpisode :: (String, Int, Int, String) -> [Int] 
+processEachEpisode (keyword, season, episode, url) = lireJSON (keyword, season, episode, getBody url) 
+-- ("jon",1,1,"jon jon")
+
+getBody :: String -> String
+getBody url = do
+            manager <- newManager defaultManagerSettings
+            request <- parseRequest url
+            response <- httpLbs request manager
+            BL.unpack $ responseBody response
+            
+lireJSON :: (String, Int, Int, String) -> [Int]
+lireJSON (keyword, season, episode, body) = do
+    let req = decode $ BL.pack body :: Maybe Serie
+    case req :: Maybe Serie of
+        Nothing -> do
+                --putStrLn "Couldn't load the JSON data from decode Aeson"
+                []
+        Just req -> do
+                    stemmingProcess (keyword, season, episode, (show.plot) req)
+                    
 
 
 {-
@@ -102,7 +130,7 @@ processEachEpisode (keyword, season, episode,url) = -- ("jon",1,1,"jon jon")
     Sortie :
         [Int] (season, episode, occurrence)
 -}
---stemmingProcess :: (String, Int, Int, String) -> [Int]
+stemmingProcess :: (String, Int, Int, String) -> [Int]
 stemmingProcess (keyword, season, episode, text) = --let (keyword, season, episode, req) = ("jon", 1, 1, "Jon the Hand of the King ... an army") in
     let gwf = GWF.getWordsFile text in
     let kw = (DT.unpack . DT.toLower . DT.pack) (lines (PS.porterStemmer keyword) !! 0) in -- root of the keyword
