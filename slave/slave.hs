@@ -7,11 +7,9 @@ import System.Environment
 import Control.Concurrent
 import Data.String
 import Control.Monad
+import Network.HTTP.Client
 import qualified Data.ByteString.Lazy.Char8 as BL
 import GHC.Generics (Generic)
-import System.Environment
-import Data.String
-import Network.HTTP
 import Data.Aeson (FromJSON, ToJSON, decode, encode)
 import qualified Data.Text as DT
 import qualified GetWordsFilev2 as GWF
@@ -33,7 +31,7 @@ main = do
     forever $ do
         putStrLn "Slave is active..."
         threadDelay 5000000
-		
+
 -- |Receives and broadcasts next order on incomingOrder channel
 receiveOrder :: Handle -> Chan [[String]] -> IO ()
 receiveOrder handle incomingOrder = do
@@ -51,15 +49,14 @@ executeOrder incomingOrder = do
  let parsedArguments = map AP.parseArguments order
  let urls = map extractURLs parsedArguments
  descriptions <- getAllContent urls
- let updatedContent = updateAllContent parsedArguments descriptions
- let tabtabSeasonEpisodeOccurrence = map processEachSeason updatedContent
- putStrLn ""
+ let work = process parsedArguments descriptions
  {-
  handle <- N.connectTo "185.167.204.218" (N.PortNumber 4446)
  hSetBuffering handle LineBuffering
- -- hPutStrLn handle work
+ hPutStrLn handle work
  hClose handle
  -}
+ putStrLn ""
 
 extractURLs :: [(String, Int, Int, String)] -> [String]
 extractURLs [] = []
@@ -68,16 +65,22 @@ extractURLs (x:xs) = (getURL x) : (extractURLs xs)
 getURL :: (String, Int, Int, String) -> String
 getURL (_,_,_,u) = u
 
-get 	:: String -> IO String
-get url = simpleHTTP (getRequest url) >>= getResponseBody
+get :: String -> IO String
+get url = do
+            manager <- newManager defaultManagerSettings
+            request <- parseRequest url
+            response <- httpLbs request manager
+            return $ BL.unpack $ responseBody response
 
-getAllContent 			:: [[String]] -> IO [[String]]
-getAllContent (s:sx)  	= do
+getAllContent :: [[String]] -> IO [[String]]
+getAllContent [] = return []
+getAllContent (s:sx) = do
  c <- getContent s
  cx <- getAllContent sx
  return (c:cx)
 
-getContent 			:: [String] -> IO [String]
+getContent :: [String] -> IO [String]
+getContent [] = return []
 getContent (e:ex) = do
  c <- get e
  cx <- getContent ex
@@ -92,6 +95,11 @@ updateContent ::  [(String, Int, Int, String)] -> [String] -> [(String, Int, Int
 updateContent [] [] = []
 updateContent ((a,b,c,url):xs) (body:ys) = (a, b, c, body) : (updateContent xs ys)
 
+process :: [[(String, Int, Int, String)]] -> [[String]] -> [[[Int]]]
+process parsedArguments descriptions = do
+ let updatedContent = updateAllContent parsedArguments descriptions
+ map processEachSeason updatedContent
+ 
 
 data Serie = Serie { season :: Int, name :: String, episode :: Int, plot :: String }
     deriving (Show, Generic)
@@ -107,11 +115,8 @@ processEachEpisode :: (String, Int, Int, String) -> [Int]
 processEachEpisode (keyword, season, episode, body) = do
     let req = decode $ BL.pack body :: Maybe Serie
     case req :: Maybe Serie of
-        Nothing -> do
-                --putStrLn "Couldn't load the JSON data from decode Aeson"
-                []
-        Just req -> do
-                    stemmingProcess (keyword, season, episode, (show.plot) req)
+        Nothing  -> []
+        Just req -> stemmingProcess (keyword, season, episode, (show.plot) req)
 
 {-
     Entree :
