@@ -113,6 +113,7 @@ sendOrders orders registered = do
     if numberOfRegistered > 0
         then do
             orders' <- readChan orders
+            print $ "Orders to be parsed : " ++ (show order's)
             let parsedOrders = OD.parseArguments orders' numberOfRegistered
             dispatchOrders parsedOrders registered'
             sendOrders orders registered
