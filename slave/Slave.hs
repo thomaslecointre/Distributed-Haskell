@@ -17,9 +17,9 @@ import GHC.Generics (Generic)
 
 import qualified ArgumentsParser as AP
 import qualified Data.Text as DT
-import qualified GetWordsFilev2 as GWF
+import qualified GetWordsFile as GWF
 import qualified PorterStemmer as PS
-import qualified Statisticsv3 as Stat
+import qualified StatisticsSlave as Stat
 import qualified KeyWordOccurrence as KWO
 
 main :: IO ()

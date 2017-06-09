@@ -1,7 +1,7 @@
 -- code récupéré en partie sur
 --https://hackage.haskell.org/package/Condor-0.2/docs/src/Condor-Language-English-StopWords.html#isStopWord
 
-module GetWordsFilev2 where
+module GetWordsFile where
     
 import qualified Data.Set as S    
 import qualified Data.Text as T

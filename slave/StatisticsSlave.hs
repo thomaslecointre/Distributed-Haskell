@@ -3,7 +3,7 @@ module StatisticsSlave where
 import Data.List
 
 
-CloudEachEpisode :: Int -> Int -> [(String, Int)] -> CloudEachEpisode
+-- CloudEachEpisode :: Int -> Int -> [(String, Int)] -> CloudEachEpisode
 data CloudEachEpisode = CloudEachEpisode { season :: Int, episode :: Int, cloud :: [(String, Int)]}
 
 instance Show CloudEachEpisode where
