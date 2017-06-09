@@ -130,7 +130,9 @@ dispatchOrders :: [[[String]]]     -- ^ Parsed orders
 dispatchOrders _ [] = putStrLn "All orders dispatched or no slaves available"
 dispatchOrders [] _ = putStrLn "All orders dispatched or no parsed orders"
 dispatchOrders (x:xs) (y:ys) = do
+    putStrLn "Dispatching orders..."
     dispatchOrder x y
+    print $ "Dispatched order to : " ++ y
     dispatchOrders xs ys
 
 -- |Dispatches order to a slave
@@ -138,10 +140,11 @@ dispatchOrder :: [[String]]   -- ^ Order
               -> String       -- ^ IP address of a particular slave  
               -> IO ()
 dispatchOrder o a = do
+    print $ "Attempting to connect to : " ++ a
     handle <- N.connectTo a (N.PortNumber 5000)
+    print $ "Connected to slave @ " ++ a
     hSetBuffering handle LineBuffering
     hPutStrLn handle (show o)
-    print $ "Sent order to " ++ a
     hClose handle
 
 {-|
