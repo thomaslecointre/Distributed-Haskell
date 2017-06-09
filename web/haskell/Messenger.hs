@@ -6,21 +6,25 @@ import System.Directory
 import Numeric
 import Control.Concurrent
 import Data.String
+import Data.List
 
 main = do
     xs <- getArgs
     let seasonName = xs !! 1
     currentPath <- getCurrentDirectory
     let path = currentPath ++ "/public/" ++ seasonName
+    print $ "Season path is : " ++ path
     seasons <- listDirectory path
-    files <- discoverFiles seasons
+    files <- discoverFiles seasons path
     let arguments = map (show . length) files
     sendOrder 4445 (xs ++ arguments)
 
 
-discoverFiles :: [FilePath] -> IO [[FilePath]]
-discoverFiles seasons = do
-    mapM listDirectory seasons
+discoverFiles :: [FilePath] -> String -> IO [[FilePath]]
+discoverFiles seasons path = do
+    let paths = sort seasons
+    let paths' = map ((path ++ "/") ++) paths
+    mapM listDirectory paths'
 
 
 
