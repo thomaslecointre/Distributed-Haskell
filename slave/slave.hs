@@ -49,15 +49,15 @@ receiveOrder handle incomingOrder = do
 -- | Reads and executes next order
 executeOrder :: Chan [[String]] -> IO ()
 executeOrder incomingOrder = do
-	order <- readChan incomingOrder
-	let parsedArguments = map AP.parseArguments order
-	let urls = map extractURLs parsedArguments
-	descriptions <- getAllContent urls
-	let work = process parsedArguments descriptions
-	handle <- N.connectTo "185.167.204.218" (N.PortNumber 4446)
-	hSetBuffering handle LineBuffering
-	hPutStrLn handle work
-	hClose handle
+    order <- readChan incomingOrder
+    let parsedArguments = map AP.parseArguments order
+    let urls = map extractURLs parsedArguments
+    descriptions <- getAllContent urls
+    let work = process parsedArguments descriptions
+    handle <- N.connectTo "185.167.204.218" (N.PortNumber 4446)
+    hSetBuffering handle LineBuffering
+    hPutStrLn handle work
+    hClose handle
 
 extractURLs :: [(String, Int, Int, String)] -> [String]
 extractURLs [] = []
@@ -68,24 +68,24 @@ getURL (_,_,_,u) = u
 
 get :: String -> IO String
 get url = do
-	manager <- newManager defaultManagerSettings
-	request <- parseRequest url
-	response <- httpLbs request manager
-	return $ BL.unpack $ responseBody response
+    manager <- newManager defaultManagerSettings
+    request <- parseRequest url
+    response <- httpLbs request manager
+    return $ BL.unpack $ responseBody response
 
 getAllContent :: [[String]] -> IO [[String]]
 getAllContent [] = return []
 getAllContent (s:sx) = do
-	c <- getContent s
-	cx <- getAllContent sx
-	return (c:cx)
+    c <- getContent s
+    cx <- getAllContent sx
+    return (c:cx)
 
 getContent :: [String] -> IO [String]
 getContent [] = return []
 getContent (e:ex) = do
-	c <- get e
-	cx <- getContent ex
-	return (c:cx)
+    c <- get e
+    cx <- getContent ex
+    return (c:cx)
 
 updateAllContent :: [[(String, Int, Int, String)]] -> [[String]] -> [[(String, Int, Int, String)]]
 updateAllContent [] _ = []
@@ -101,10 +101,10 @@ getKeyword (((keyword,_,_,_):_):_) = keyword
 
 process :: [[(String, Int, Int, String)]] -> [[String]] -> String
 process parsedArguments descriptions = do
-	let updatedContent = updateAllContent parsedArguments descriptions
-	if getKeyword updatedContent == "N/A"
-		then show $ statisticProcess updatedContent
-		else show $ map processEachSeason updatedContent
+    let updatedContent = updateAllContent parsedArguments descriptions
+    if getKeyword updatedContent == "N/A"
+        then show $ statisticProcess updatedContent
+        else show $ map processEachSeason updatedContent
 
 
 statisticProcess :: [[(String, Int, Int, String)]] -> [[String]]
@@ -122,7 +122,7 @@ statisticProcessEachEpisode (a,b,c,text) =
     let ps = DT.unpack . DT.toLower . DT.pack $ PS.porterStemmer gwf in -- "jon\nhand\nking\n...\narmi\n"
     (a,b,c,ps)
     
-	
+    
 data Serie = Serie { season :: Int, name :: String, episode :: Int, plot :: String }
     deriving (Show, Generic)
 
