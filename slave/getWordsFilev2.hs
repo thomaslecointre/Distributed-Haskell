@@ -1,4 +1,4 @@
--- code résupéré en partie sur
+-- code récupéré en partie sur
 --https://hackage.haskell.org/package/Condor-0.2/docs/src/Condor-Language-English-StopWords.html#isStopWord
 
 module GetWordsFilev2 where
@@ -7,13 +7,18 @@ import qualified Data.Set as S
 import qualified Data.Text as T
 import System.Environment
 
-removePunc :: String -> String
+-- |Deletes the defined punctuation characters
+removePunc  :: String   -- ^ Text with punctuation characters
+            -> String   -- ^ Text without punctuation characters
 removePunc xs = [ x | x <- xs, not (x `elem` ",.?!-:;\"\'") ]
 
-isStopWord :: T.Text -> Bool
+-- |Returns if the word in input is or not a stopword
+isStopWord  :: T.Text   -- ^ A word
+            -> Bool     -- ^ Is or not a stopword
 isStopWord w = S.member w stopWords
 
-stopWords :: S.Set T.Text
+-- |Gives a set of stopwords
+stopWords :: S.Set T.Text   -- ^ Set of stopwords
 stopWords = S.fromList $ map T.pack
      [ "i"
      , "me"
@@ -144,9 +149,13 @@ stopWords = S.fromList $ map T.pack
      , "now"
      ]
 
-deleteStopWords :: [String] -> [String]
+-- |Deletes stopwords of a text
+deleteStopWords :: [String] -- ^ A text with stopwords
+                -> [String] -- ^ The text without stopwords
 deleteStopWords [] = []
 deleteStopWords (x:l) = if isStopWord $ T.pack x then deleteStopWords l else x:(deleteStopWords l)
 
-getWordsFile :: String -> String
+-- |Returns all the non stopwords of a text, each on a new line
+getWordsFile    :: String   -- ^ A text with stopwords like "there is a fish in the water"
+                -> String   -- ^ The text without stopwords, each word on a new line like "fish\nwater\n"
 getWordsFile resume = unlines $ deleteStopWords $ words $ removePunc resume
