@@ -11,46 +11,52 @@ import Control.Monad
 
 import Data.String
 
+main :: IO ()
 main = do
     orders <- newChan
+    orderType <- newEmptyMVar
     registering <- newChan
     registered <- newMVar []
     workStatus <- newChan
     workFiltering <- newChan
     okToProcess <- newChan
     filteredWork <- newMVar []
-    forkIO $ receiveOrders orders workStatus
+    forkIO $ receiveOrders orders orderType workStatus
     forkIO $ receiveRegistrations registering
     forkIO $ sortRegistrations registering registered
     forkIO $ sendOrders orders registered
     forkIO $ receiveWork workFiltering okToProcess registered
     forkIO $ filterWork workFiltering filteredWork
-    forkIO $ processWork okToProcess filteredWork
+    forkIO $ processWork okToProcess filteredWork orderType
     forever $ do
         putStrLn "Master is active..."
         threadDelay 5000000
 
 -- |Receives connections from messengers
 receiveOrders :: Chan [String]    -- ^ Channel used for broadcasting orders across threads
+              -> MVar String      -- ^ Variable used to define the type of order to be executed by each slave (keyword research or statistics)
               -> Chan String      -- ^ Channel used for broadcasting status of work            
               -> IO ()
-receiveOrders orders workStatus = do
+receiveOrders orders orderType workStatus = do
     socket <- N.listenOn (N.PortNumber 4445)
     putStrLn "Receiving orders on 4445..."
-    forever $ N.accept socket >>= handleOrders orders workStatus
+    forever $ N.accept socket >>= handleOrders orders orderType workStatus
    
 {-|
     Reads order from messenger and broadcasts order to orders channel. 
     Upon order's completion or failure, the function sends a status reply to messenger.
 -}
 handleOrders :: Chan [String]                        -- ^ Channel used for broadcasting orders across threads
+             -> MVar String                          -- ^ Variable used to define the type of order to be executed by each slave (keyword research or statistics)
              -> Chan String                          -- ^ Channel used for broadcasting status of work
              -> (Handle, NS.HostName, NS.PortNumber) -- ^ Returned by N.accept method
              -> IO ()
-handleOrders orders workStatus (handle, hostName, portNumber) = do
+handleOrders orders orderType workStatus (handle, hostName, portNumber) = do
     hSetBuffering handle LineBuffering
     code <- hGetLine handle
     let order = read code :: [String]
+    let typeOfOrder = order !! 0
+    putMVar orderType typeOfOrder
     print $ "Received orders : " ++ (show order)
     writeChan orders order
     status <- readChan workStatus -- "OK" or "KO"
@@ -136,9 +142,9 @@ dispatchOrder o a = do
     The function then reads all work on the workFiltering channel and generates
     a large table which is then used for JSON creation.
 -}
-receiveWork :: Chan String 
-            -> Chan String
-            -> MVar [String]
+receiveWork :: Chan String      -- ^ Channel where work from slaves is deposited on
+            -> Chan String      -- ^ Channel used to indicated all expected work has arrived
+            -> MVar [String]    -- ^ Variable containing all registered slaves 
             -> IO ()
 receiveWork workFiltering okToProcess registered = do
     registered' <- takeMVar registered
@@ -149,11 +155,11 @@ receiveWork workFiltering okToProcess registered = do
     forever $ N.accept socket >>= forkIO . (handleWork workFiltering okToProcess slaveCount slaveCountReception)
 
 -- |Transfers each slave's work onto workFiltering channel
-handleWork :: Chan String
-           -> Chan String
-           -> Int
-           -> MVar Int
-           -> (Handle, NS.HostName, NS.PortNumber)
+handleWork :: Chan String                           -- ^ Channel where work from slaves is deposited on
+           -> Chan String                           -- ^ Channel used to indicated all expected work has arrived
+           -> Int                                   -- ^ Number of slaves registered
+           -> MVar Int                              -- ^ Variable/counter of all slaves who have currently deposited work
+           -> (Handle, NS.HostName, NS.PortNumber)  -- ^ Result of N.accept
            -> IO ()
 handleWork workFiltering okToProcess slaveCount slaveCountReception (handle, hostName, portNumber) = do
     hSetBuffering handle LineBuffering
@@ -166,10 +172,10 @@ handleWork workFiltering okToProcess slaveCount slaveCountReception (handle, hos
             writeChan okToProcess "OK"
         else do
             putMVar slaveCountReception (slaveCountReception' + 1)
-            
-    
-filterWork :: Chan String
-           -> MVar [String]
+
+-- |Filters incoming work by reading workFiltering channel and adding work to the filteredWork table variable.            
+filterWork :: Chan String   -- ^ Channel where work from slaves is deposited on
+           -> MVar [String] -- ^ Variable containing all currently received work from slaves
            -> IO ()
 filterWork workFiltering filteredWork = do
     work <- readChan workFiltering
@@ -178,19 +184,44 @@ filterWork workFiltering filteredWork = do
         then do
             putStrLn "Duplicated work detected!"
             putMVar filteredWork filteredWork'
+            filterWork workFiltering filteredWork
         else do
             putMVar filteredWork (work : filteredWork')
+            filterWork workFiltering filteredWork
 
-processWork :: Chan String
-            -> MVar [String]
+{-|
+    Extracts filteredWork variable and sends it to the appropriate function (statistics or keyword) 
+    depending on the first argument of the order.
+-}    
+processWork :: Chan String      -- ^ Channel used to indicated all expected work has arrived
+            -> MVar [String]    -- ^ Variable containing all currently received work from slaves
+            -> MVar String      -- ^ Variable used to define the type of order to be executed by each slave (keyword research or statistics)
             -> IO ()
-processWork okToProcess filteredWork = do
+processWork okToProcess filteredWork orderType = do
     status <- readChan okToProcess
     if status == "OK"
         then do
             allOfTheWork <- takeMVar filteredWork
-            -- sortWork allOfTheWork -- !!
+            orderType' <- takeMVar orderType
+            if orderType' == "N/A"
+                then statistics allOfTheWork
+                else keyword allOfTheWork
             putMVar filteredWork []
-        else putStrLn "Waiting for all slaves to submit work"
-            
+            processWork okToProcess filteredWork orderType
+        else do
+            putStrLn "Waiting for all slaves to submit work"
+            processWork okToProcess filteredWork orderType
+
+-- |Creates JSON for statistics display
+statistics  :: [String] -- ^ Extracted value from filteredWork mvar
+            -> IO ()
+statistics work = do
+    putStrLn "Working on statistics"
+    -- !!
+-- |Creates JSON for keyword display
+keyword :: [String] -- ^ Extracted value from filteredWork mvar
+        -> IO ()
+keyword work = do
+    putStrLn "Working on keywords"
+    -- !!
     
