@@ -7,7 +7,7 @@ module.exports = {
 
     const haskell = path.join(__dirname, 'haskell');
     
-    const cmd = spawn(path.join(haskell, 'messenger.exe'), arguments);
+    const cmd = spawn(path.join(haskell, 'Messenger.exe'), arguments);
       
     cmd.stdout.on('data', (data) => {
       console.log(`stdout: ${data}`);
