@@ -33,8 +33,8 @@ chronogicalSortToJSON l = "{" ++ (concat $ DL.intersperse "," $ map chronogicalS
 -- chronogicalSortToJSON [[[1,1,2],[1,2,3]],[[2,1,4],[2,2,3]],[[3,1,2],[3,2,1]]] -> {"1" : [2,3], "2" : [4,3], "3" : [2,1]}
 
 -- |
-concatChronogicalSort :: [String] -> String
-concatChronogicalSort l =
+concatChronologicalSort :: [String] -> String
+concatChronologicalSort l =
     let listEachSeason = concat $ concatSlaveResult l in
     chronogicalSortToJSON listEachSeason
 -- concatChronogicalSort ["[[[1,1,2],[1,2,3]],[[2,1,4],[2,2,3]]]","[[[3,1,2],[3,2,1]]]"] -> {"1" : [2,3], "2" : [4,3], "3" : [2,1]}
