@@ -62,6 +62,8 @@ module.exports = {
             args.push(moreItems.length);
           }
 
+          console.log("Arguments sent to messenger : " + args);
+
           haskell.launch(args);
         });
       }
