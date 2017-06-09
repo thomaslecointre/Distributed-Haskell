@@ -22,7 +22,7 @@ statisticsSeasonEpisodeText season episode text =
     let rs = map (\d -> (d,length (filter (\w -> d==w) ws))) ds in
     let ts = map (\(m,c) -> NuageDeMots { mot = m, occurrence = c}) rs in
     "\"" ++ show season ++ "_" ++ show episode ++ "\" : " ++ BL.unpack (encode ts)
--- 1 1 "jon\njon\ntest" -> "1_1" : [{"mot":"jon","occurrence":2},{"mot":"test",occurrence":1}]
+-- 1 1 "jon\njon\ntest" -> "1_1" : {"jon":2,"test":1,"arryn":5}
 
 concatStatistics :: [String] -> String
 concatStatistics [] = ""

@@ -2,6 +2,8 @@ import qualified Network as N
 import qualified Network.Socket as NS
 import qualified Utils as U
 import qualified OrderDistribution as OD
+import qualified StatisticsMaster as Stat
+import qualified SortMaster as Sort
 
 import System.IO
 import System.Environment
@@ -217,11 +219,14 @@ statistics  :: [String] -- ^ Extracted value from filteredWork mvar
             -> IO ()
 statistics work = do
     putStrLn "Working on statistics"
-    -- !!
+    writeFile "../JSON/statistics.json" (Stat.concatStatistics work)
+
 -- |Creates JSON for keyword display
 keyword :: [String] -- ^ Extracted value from filteredWork mvar
         -> IO ()
 keyword work = do
     putStrLn "Working on keywords"
-    -- !!
+    writeFile "../JSON/chronological.json" (Sort.concatChronologicalSort work)
+    writeFile "../JSON/per-season.json" (Sort.concatSeasonSort work)
+    writeFile "../JSON/pertinence.json" (Sort.concatRelevanceSort work)
     

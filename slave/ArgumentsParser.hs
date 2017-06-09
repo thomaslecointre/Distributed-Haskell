@@ -14,7 +14,7 @@ listStringNumberToList n = [1..(read n :: Int)]
 
 -- |Transforms a list of Int to a list of String
 listSeasonEpisode   :: [Int]    -- ^ List of Int from 1 to n
-                    -> [String] -- ^ Lsit of String from "1" to "n"
+                    -> [String] -- ^ List of String from "1" to "n"
 listSeasonEpisode [] = []
 listSeasonEpisode (x:l) = (show x):(listSeasonEpisode l)
 
@@ -34,6 +34,6 @@ keywordSeriesSeasonEpisodes l (x:xs) = (parseKeywordSeriesSeasonEpisode (l ++ (x
 parseArguments  :: [String] -- ^ List of String like ["jon", "game_of_thrones","1","10"]
                 -> [(String, Int, Int, String)] -- ^ List of tuples like [("jon",1,1,"http://185.167.204.218:8081/public/game_of_thrones/1/1"), ("jon",1,2,"http.../1/2"), ... ("jon", 1, 10, "http.../1/10")]
 parseArguments [] = []
-parseArguments args = -- ["Ned", "GoT","1","10"]
+parseArguments args =
     let (keywordSeriesSeason, nbEpisodes) = keywordSeriesSeasonNbEpisode args in
     keywordSeriesSeasonEpisodes keywordSeriesSeason (listSeasonEpisode (listStringNumberToList nbEpisodes))

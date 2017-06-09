@@ -101,12 +101,12 @@ processEachEpisode :: (String, Int, Int, String) -> [Int]
 processEachEpisode (keyword, season, episode, url) = lireJSON (keyword, season, episode, getBody url) 
 -- ("jon",1,1,"jon jon")
 
-getBody :: String -> String
+getBody :: String -> IO String
 getBody url = do
             manager <- newManager defaultManagerSettings
             request <- parseRequest url
             response <- httpLbs request manager
-            BL.unpack $ responseBody response
+            return $ BL.unpack $ responseBody response
             
 lireJSON :: (String, Int, Int, String) -> [Int]
 lireJSON (keyword, season, episode, body) = do
