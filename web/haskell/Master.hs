@@ -139,6 +139,7 @@ dispatchOrder o a = do
     handle <- N.connectTo a (N.PortNumber 5000)
     hSetBuffering handle LineBuffering
     hPutStrLn handle (show o)
+    print $ "Sent order to " ++ a
     hClose handle
 
 {-|
