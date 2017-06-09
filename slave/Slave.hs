@@ -29,10 +29,12 @@ main = do
     putStrLn "Connected"
     socket <- N.listenOn (N.PortNumber 5000)
     incomingOrder <- newChan
+    outgoingOrder <- newChan
     (handle, host, port) <- N.accept socket
     hSetBuffering handle LineBuffering
-    forkIO $ forever $ receiveOrder handle incomingOrder
-    forkIO $ forever $ executeOrder incomingOrder
+    forkIO $ receiveOrder handle incomingOrder
+    forkIO $ executeOrder incomingOrder outgoingOrder
+    forkIO $ prepareToSendWork outgoingOrder
     forever $ do
         putStrLn "Slave is active..."
         threadDelay 5000000
@@ -44,21 +46,33 @@ receiveOrder handle incomingOrder = do
     let order = read code :: [[String]]
     print $ "Order received : " ++ show order
     writeChan incomingOrder order
+    receiveOrder handle incomingOrder
     -- receiveOrder handle incomingOrder
 
 -- | Reads and executes next order
-executeOrder :: Chan [[String]] -> IO ()
-executeOrder incomingOrder = do
+executeOrder    :: Chan [[String]] 
+                -> Chan String 
+                -> IO ()
+executeOrder incomingOrder outgoingOrder = do
     order <- readChan incomingOrder
     let parsedArguments = map AP.parseArguments order
     let urls = map extractURLs parsedArguments
     descriptions <- getAllContent urls
     let work = process parsedArguments descriptions
+    writeChan outgoingOrder work
+    executeOrder incomingOrder outgoingOrder
+
+prepareToSendWork :: Chan String -> IO ()
+prepareToSendWork outgoingOrder = do
     handle <- N.connectTo "185.167.204.218" (N.PortNumber 4446)
     hSetBuffering handle LineBuffering
+    forever $ sendWork outgoingOrder handle
+    
+sendWork :: Chan String -> Handle -> IO ()
+sendWork outgoingOrder handle = do
+    work <- readChan outgoingOrder
     hPutStrLn handle work
-    hClose handle
-
+    
 extractURLs :: [(String, Int, Int, String)] -> [String]
 extractURLs [] = []
 extractURLs (x:xs) = (getURL x) : (extractURLs xs)
