@@ -118,7 +118,8 @@ sendOrders orders registered = do
             sendOrders orders registered
         else do
             putStrLn "No slaves available!"
-            sendOrders orders registered
+            threadDelay 5000000
+	    sendOrders orders registered
             
 -- |Dispatches orders to all slaves
 dispatchOrders :: [[[String]]]     -- ^ Parsed orders
