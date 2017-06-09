@@ -4,7 +4,8 @@ module.exports = {
 
     imdb.get(series, {apiKey: '46e82526'}, (err, things) => {
 
-      if(!things || err) {
+      if(err) {
+        console.log('Season error');
         console.log('An error has occurred. Please try again.');
         res.end('An error has occurred. Please try again.');
       } else {
@@ -28,6 +29,7 @@ module.exports = {
             imdb.getById(item.imdbid, {apiKey: '46e82526'}, (err, idThings) => {
 			
               if(!idThings || err) {
+                console.log('Episode error');
                 console.log('An error has occurred. Please try again.');
                 res.end('An error has occurred. Please try again.');
               } else {
@@ -50,11 +52,12 @@ module.exports = {
               }
             });
           });
-
+          /*
           var haskell = require('./haskell');
           var args = [keyword, urlTitle];
           console.log("Arguments sent to messenger : " + args);
           haskell.launch(args);
+          */
         });
       }
     });
