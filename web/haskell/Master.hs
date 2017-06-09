@@ -125,6 +125,8 @@ sendOrders orders registered = do
 dispatchOrders :: [[[String]]]     -- ^ Parsed orders
                -> [String]         -- ^ slave IP address table
                -> IO ()
+dispatchOrders _ [] = putStrLn "All orders dispatched"
+dispatchOrders [] _ = putStrLn "All orders dispatched"
 dispatchOrders (x:xs) (y:ys) = do
     dispatchOrder x y
     dispatchOrders xs ys
