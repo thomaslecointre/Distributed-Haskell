@@ -52,12 +52,12 @@ module.exports = {
               }
             });
           });
-          /*
+          
           var haskell = require('./haskell');
           var args = [keyword, urlTitle];
           console.log("Arguments sent to messenger : " + args);
           haskell.launch(args);
-          */
+          
         });
       }
     });
