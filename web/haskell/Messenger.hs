@@ -10,7 +10,8 @@ import Data.String
 main = do
     xs <- getArgs
     let seasonName = xs !! 1
-    let path = "../public/" ++ seasonName
+    currentPath <- getCurrentDirectory
+    let path = (take (length currentPath - 7) currentPath) ++ "/public/" ++ seasonName
     seasons <- listDirectory path
     files <- discoverFiles seasons
     let arguments = map (show . length) files
