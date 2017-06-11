@@ -57,21 +57,24 @@ executeOrder incomingOrder outgoingOrder = do
     order <- readChan incomingOrder
     let parsedArguments = map AP.parseArguments order
     let urls = map extractURLs parsedArguments
-    descriptions <- getAllContent urls
-    let work = process parsedArguments descriptions
+    putStrLn "Attempting to download all contents"
+    contents <- getAllContent urls
+    putStrLn "All descriptions downloaded"
+    let work = process parsedArguments contents
     writeChan outgoingOrder work
     executeOrder incomingOrder outgoingOrder
 
 prepareToSendWork :: Chan String -> IO ()
 prepareToSendWork outgoingOrder = do
     handle <- N.connectTo "192.168.1.13" (N.PortNumber 4446)
-    hSetBuffering handle LineBuffering
     forever $ sendWork outgoingOrder handle
     
 sendWork :: Chan String -> Handle -> IO ()
 sendWork outgoingOrder handle = do
     work <- readChan outgoingOrder
+    putStrLn "Attempting to send work back"
     hPutStrLn handle work
+    putStrLn "Work sent back"
     
 extractURLs :: [(String, Int, Int, String)] -> [String]
 extractURLs [] = []
@@ -98,6 +101,7 @@ getContent :: [String] -> IO [String]
 getContent [] = return []
 getContent (e:ex) = do
     c <- get e
+    -- print $ "Content successfully downloaded : " ++ c
     cx <- getContent ex
     return (c:cx)
 
