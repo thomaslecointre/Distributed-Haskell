@@ -12,12 +12,21 @@ main = do
     xs <- getArgs
     let seasonName = xs !! 1
     currentPath <- getCurrentDirectory
-    let path = currentPath ++ "/public/" ++ seasonName
-    print $ "Season path is : " ++ path
-    seasons <- listDirectory path
-    files <- discoverFiles seasons path
-    let arguments = map (show . length) files
-    sendOrder 4445 (xs ++ arguments)
+    if last currentPath == 'b'
+        then do
+            let path = currentPath ++ "\\public\\" ++ seasonName
+            print $ "Season path is : " ++ path
+            seasons <- listDirectory path
+            files <- discoverFiles seasons path
+            let arguments = map (show . verifiedLengths) files
+            sendOrder 4445 (xs ++ arguments)
+        else do
+            let path = currentPath ++ "Web\\public\\" ++ seasonName
+            print $ "Season path is : " ++ path
+            seasons <- listDirectory path
+            files <- discoverFiles seasons path
+            let arguments = map (show . verifiedLengths) files
+            sendOrder 4445 (xs ++ arguments)
 
 
 discoverFiles :: [FilePath] -> String -> IO [[FilePath]]
@@ -26,7 +35,11 @@ discoverFiles seasons path = do
     let paths' = map ((path ++ "/") ++) paths
     mapM listDirectory paths'
 
-
+verifiedLengths :: [FilePath] -> Int
+verifiedLengths seasonEpisodes = do
+    let episodeCount = length seasonEpisodes
+    let verifiedEpisodes = takeWhile (\n -> elem (show n) seasonEpisodes) [1..episodeCount]
+    length verifiedEpisodes
 
 
 {-|

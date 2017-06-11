@@ -21,7 +21,7 @@ listSeasonEpisode (x:l) = (show x):(listSeasonEpisode l)
 -- |Transforms ["kw","serie","s","e"] into ("kw",s,e,"url")
 parseKeywordSeriesSeasonEpisode :: [String] -- ^ List of 4 arguments like ["kw","serie","s","e"]
                                 -> (String, Int, Int, String)   -- ^ Tuple of 4 arguments like ("kw",s,e,"url")
-parseKeywordSeriesSeasonEpisode (keyword:serie:season:episode:[]) = (keyword, read season :: Int, read episode :: Int, "http://185.167.204.218:8081/public/" ++ serie ++ "/" ++ season ++ "/" ++ episode)
+parseKeywordSeriesSeasonEpisode (keyword:serie:season:episode:[]) = (keyword, read season :: Int, read episode :: Int, "http://192.168.1.13:8081/public/" ++ serie ++ "/" ++ season ++ "/" ++ episode)
 
 -- |Tranforms 2 lists of String (["kw","serie","s"] and ["e1","e2",...]) into a list of tuples of 4 arguments like [("kw",s,e,"url")]
 keywordSeriesSeasonEpisodes :: [String] -- ^ List of 3 String like ["kw","serie","s"]
