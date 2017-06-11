@@ -173,8 +173,9 @@ handleWork :: Chan String                           -- ^ Channel where work from
            -> (Handle, NS.HostName, NS.PortNumber)  -- ^ Result of N.accept
            -> IO ()
 handleWork workFiltering okToProcess slaveCount slaveCountReception (handle, hostName, portNumber) = do
-    hSetBuffering handle LineBuffering
+    putStrLn "Slave ready to return work"
     code <- hGetLine handle
+    print $ "Work retrieved : " ++ code
     writeChan workFiltering code
     slaveCountReception' <- takeMVar slaveCountReception
     if slaveCountReception' == slaveCount

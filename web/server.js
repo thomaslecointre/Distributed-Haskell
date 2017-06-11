@@ -28,7 +28,7 @@ app.get('/', function (req, res) {
 });
 
 app.get('/public/:series/:season/:episode', function(req, res) {
-  console.log('Request made for JSON');
+  console.log('Request made for JSON : ' + req.params.season + '/' + req.params.episode);
   res.sendFile(path.join(__dirname, 'public', req.params.series, req.params.season, req.params.episode, 'episode.json'));
 });
 

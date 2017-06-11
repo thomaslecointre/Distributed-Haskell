@@ -21,7 +21,7 @@ main = do
             let arguments = map (show . verifiedLengths) files
             sendOrder 4445 (xs ++ arguments)
         else do
-            let path = currentPath ++ "Web\\public\\" ++ seasonName
+            let path = currentPath ++ "\\Web\\public\\" ++ seasonName
             print $ "Season path is : " ++ path
             seasons <- listDirectory path
             files <- discoverFiles seasons path
