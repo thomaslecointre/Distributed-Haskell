@@ -7,7 +7,7 @@ import qualified SortMaster as Sort
 
 import System.IO
 import System.Environment
-
+import System.Directory
 import Control.Concurrent
 import Control.Monad
 
@@ -158,30 +158,33 @@ receiveWork :: Chan String      -- ^ Channel where work from slaves is deposited
             -> MVar [String]    -- ^ Variable containing all registered slaves 
             -> IO ()
 receiveWork workFiltering okToProcess registered = do
-    registered' <- takeMVar registered
-    let slaveCount = length registered'
-    putMVar registered registered'
     slaveCountReception <- newMVar 1
     socket <- N.listenOn (N.PortNumber 4446)
-    forever $ N.accept socket >>= forkIO . (handleWork workFiltering okToProcess slaveCount slaveCountReception)
+    forever $ N.accept socket >>= forkIO . (handleWork workFiltering okToProcess registered slaveCountReception)
 
 -- |Transfers each slave's work onto workFiltering channel
 handleWork :: Chan String                           -- ^ Channel where work from slaves is deposited on
            -> Chan String                           -- ^ Channel used to indicated all expected work has arrived
-           -> Int                                   -- ^ Number of slaves registered
+           -> MVar [String]                         -- ^ Variable containing all registered slaves 
            -> MVar Int                              -- ^ Variable/counter of all slaves who have currently deposited work
            -> (Handle, NS.HostName, NS.PortNumber)  -- ^ Result of N.accept
            -> IO ()
-handleWork workFiltering okToProcess slaveCount slaveCountReception (handle, hostName, portNumber) = do
+handleWork workFiltering okToProcess registered slaveCountReception (handle, hostName, portNumber) = do
     putStrLn "Slave ready to return work"
     code <- hGetLine handle
     print $ "Work retrieved : " ++ code
     writeChan workFiltering code
+    registered' <- takeMVar registered
+    let slaveCount = length registered'
+    putMVar registered registered'
+    print $ "Number of registered slaves : " ++ (show slaveCount)
     slaveCountReception' <- takeMVar slaveCountReception
+    print $ "Number of slaves who have sent back work : " ++ (show slaveCountReception') 
     if slaveCountReception' == slaveCount
         then do
             putMVar slaveCountReception 1
             writeChan okToProcess "OK"
+            putStrLn "Ok to process"
         else do
             putMVar slaveCountReception (slaveCountReception' + 1)
 
@@ -236,7 +239,9 @@ keyword :: [String] -- ^ Extracted value from filteredWork mvar
         -> IO ()
 keyword work = do
     putStrLn "Working on keywords"
-    writeFile "../JSON/chronological.json" (Sort.concatChronologicalSort work)
-    writeFile "../JSON/per-season.json" (Sort.concatSeasonSort work)
-    writeFile "../JSON/pertinence.json" (Sort.concatRelevanceSort work)
+    path <- getCurrentDirectory
+    let jsonPath =  (take ((length path) - 7) ) path ++ "public\\views\\json"
+    writeFile (jsonPath ++ "\\" ++ "chronological.json") (Sort.concatChronologicalSort work)
+    writeFile (jsonPath ++ "\\" ++ "per-season.json") (Sort.concatSeasonSort work)
+    writeFile (jsonPath ++ "\\" ++ "pertinence.json") (Sort.concatRelevanceSort work)
     
