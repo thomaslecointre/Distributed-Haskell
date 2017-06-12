@@ -7,7 +7,7 @@
     "dependencies": {
         "express": "latest",
         "body-parser": "latest",
-        "imdb-api": "3.0.0",
+        "imdb-api": "latest",
         "ejs": "latest"
     }
 }

@@ -24,8 +24,8 @@ import qualified KeyWordOccurrence as KWO
 
 main :: IO ()
 main = do
-    print "Connecting to Master @192.168.1.13:4444"
-    handle <- N.connectTo "192.168.1.13" (N.PortNumber 4444)
+    print "Connecting to Master @10.57.110.10:4444"
+    handle <- N.connectTo "10.57.110.10" (N.PortNumber 4444)
     putStrLn "Connected"
     socket <- N.listenOn (N.PortNumber 5000)
     incomingOrder <- newChan
@@ -66,7 +66,7 @@ executeOrder incomingOrder outgoingOrder = do
 
 prepareToSendWork :: Chan String -> IO ()
 prepareToSendWork outgoingOrder = do
-    handle <- N.connectTo "192.168.1.13" (N.PortNumber 4446)
+    handle <- N.connectTo "10.57.110.10" (N.PortNumber 4446)
     forever $ sendWork outgoingOrder handle
     
 sendWork :: Chan String -> Handle -> IO ()

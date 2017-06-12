@@ -1,12 +1,11 @@
 module.exports = {
   query : function (series, keyword, res) {
-    var imdb = require('imdb-api');
+    const imdb = require('imdb-api');
 
     imdb.get(series, {apiKey: '46e82526'}, (err, things) => {
 
       if(err) {
-        console.log('Season error');
-        console.log('An error has occurred. Please try again.');
+        console.log('Series error');
         res.end('An error has occurred. Please try again.');
       } else {
         console.log('Processing request...');
@@ -16,7 +15,7 @@ module.exports = {
         var urlTitle = title.toLowerCase().split(' ').join('_');
         var path = require('path');
         var seriesPath = path.join(__dirname, 'public', urlTitle);
-
+		console.log(seriesPath);
         var fs = require('fs');
         if (!fs.existsSync(seriesPath))  {
           fs.mkdirSync(seriesPath);
@@ -25,18 +24,15 @@ module.exports = {
         things.episodes((err, moreThings) => {
 
           moreThings.forEach(function(item, index) {
-
-            imdb.getById(item.imdbid, {apiKey: '46e82526'}, (err, idThings) => {
-			
-              if(!idThings || err) {
+            imdb.getReq({ id: item['imdbid'], opts: {apiKey: '46e82526'} }).then((idThings) => {
+              if(err) {
                 console.log('Episode error');
-                console.log('An error has occurred. Please try again.');
                 res.end('An error has occurred. Please try again.');
               } else {
 
-                var season = idThings.season;
-                var episode = idThings.episode;
-
+                var season = idThings['season'].toString();
+                var episode = idThings['episode'].toString();
+				
                 if(!fs.existsSync(path.join(seriesPath, season))) {
                   fs.mkdirSync(path.join(seriesPath, season));
                 }
