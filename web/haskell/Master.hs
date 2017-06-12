@@ -130,7 +130,7 @@ dispatchOrders :: [[[String]]]     -- ^ Parsed orders
 dispatchOrders _ [] = putStrLn "All orders dispatched or no slaves available"
 dispatchOrders [] _ = putStrLn "All orders dispatched or no parsed orders"
 dispatchOrders (x:xs) (y:ys) = do
-    putStrLn "Dispatching orders..."
+    print $ "Dispatching orders to " ++ (show (y:ys))
     dispatchOrder x y
     print $ "Dispatched order to : " ++ y
     dispatchOrders xs ys
