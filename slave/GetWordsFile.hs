@@ -1,6 +1,18 @@
--- code récupéré en partie sur
---https://hackage.haskell.org/package/Condor-0.2/docs/src/Condor-Language-English-StopWords.html#isStopWord
+{-|
+Module      : GetWordsFile
+Description : Returns all the non stopwords and punctuations of a text, each on a new line
+Copyright   : (c) Thomas Lecointre, 2017
+                  Thomas Perles, 2017
+License     : MIT
+Maintainer  :   thomas.lecointre@uha.fr
+                thomas.perles@uha.fr
+Stability   : experimental
+Portability : Windows
 
+We use this module to deletes punctuation and stopwords of a text
+Part of the code is taken from : https://hackage.haskell.org/package/Condor-0.2/docs/src/Condor-Language-English-StopWords.html#isStopWord
+
+-}
 module GetWordsFile where
     
 import qualified Data.Set as S    

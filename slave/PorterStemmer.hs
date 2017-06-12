@@ -1,6 +1,18 @@
--- code récupéré en partie sur
---https://tartarus.org/martin/PorterStemmer/haskell.txt
+{-|
+Module      : PorterStemmer
+Description : Applies the Stemming Algorithm to a text where each word is on a new line
+Copyright   : (c) Thomas Lecointre, 2017
+                  Thomas Perles, 2017
+License     : MIT
+Maintainer  :   thomas.lecointre@uha.fr
+                thomas.perles@uha.fr
+Stability   : experimental
+Portability : Windows
 
+We use this module to get all stemmed words of a text
+Part of the code is taken from : https://tartarus.org/martin/PorterStemmer/haskell.txt
+
+-}
 module PorterStemmer where
 
 import Control.Monad

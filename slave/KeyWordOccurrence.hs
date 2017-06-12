@@ -1,5 +1,18 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-|
+Module      : KeyWordOccurrence
+Description : Returns the number of occurrence of a keyword in a text where each word is on a new line
+Copyright   : (c) Thomas Lecointre, 2017
+                  Thomas Perles, 2017
+License     : MIT
+Maintainer  :   thomas.lecointre@uha.fr
+                thomas.perles@uha.fr
+Stability   : experimental
+Portability : Windows
 
+We use this module to count the number of occurrences of a keyword in a text
+
+-}
 module KeyWordOccurrence where
 
 -- |Returns the number of occurrence of a keyword in a list

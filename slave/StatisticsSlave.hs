@@ -1,11 +1,26 @@
+{-|
+Module      : StatisticsSlave
+Description : Returns a list of list of String with the season number, the episode number, and a list of pairs ("word", occurrence number)
+Copyright   : (c) Thomas Lecointre, 2017
+                  Thomas Perles, 2017
+License     : MIT
+Maintainer  :   thomas.lecointre@uha.fr
+                thomas.perles@uha.fr
+Stability   : experimental
+Portability : Windows
+
+We use this module to get two indices and every words associated to their number of occurrences in a text
+
+-}
 module StatisticsSlave where
 
 import Data.List
 
 
--- CloudEachEpisode :: Int -> Int -> [(String, Int)] -> CloudEachEpisode
+-- |A data to store two indices and a list of pairs (word, number of occurrences)
 data CloudEachEpisode = CloudEachEpisode { season :: Int, episode :: Int, cloud :: [(String, Int)]}
 
+-- |A way to show a CloudEachEpisode
 instance Show CloudEachEpisode where
   show (CloudEachEpisode a b c) = show a ++ ", " ++ show b ++ ", " ++ show c
 
