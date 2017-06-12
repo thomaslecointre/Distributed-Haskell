@@ -30,7 +30,8 @@ main = do
     putStrLn "Connected"
     incomingOrder <- newChan
     outgoingOrder <- newChan
-    forkIO $ receiveOrder incomingOrder
+    socket <- N.listenOn (N.PortNumber 5000)
+    forkIO $ receiveOrder incomingOrder socket
     forkIO $ executeOrder incomingOrder outgoingOrder
     forkIO $ prepareToSendWork outgoingOrder
     forever $ do
@@ -38,9 +39,8 @@ main = do
         threadDelay 5000000
 
 -- |Receives and broadcasts next order on incomingOrder channel
-receiveOrder :: Chan [[String]] -> IO ()
-receiveOrder incomingOrder = do
-    socket <- N.listenOn (N.PortNumber 5000)
+receiveOrder :: Chan [[String]] -> N.Socket -> IO ()
+receiveOrder incomingOrder socket = do
     (handle, host, port) <- N.accept socket
     putStrLn "Receiving orders..."
     code <- hGetLine handle
@@ -48,8 +48,7 @@ receiveOrder incomingOrder = do
     print $ "Order received : " ++ show order
     writeChan incomingOrder order
     hClose handle
-    close socket
-    receiveOrder incomingOrder
+    receiveOrder incomingOrder socket
 
 -- | Reads and executes next order
 executeOrder    :: Chan [[String]] 
@@ -68,15 +67,16 @@ executeOrder incomingOrder outgoingOrder = do
 
 prepareToSendWork :: Chan String -> IO ()
 prepareToSendWork outgoingOrder = do
-    handle <- N.connectTo "10.57.110.10" (N.PortNumber 4446)
-    forever $ sendWork outgoingOrder handle
+    forever $ sendWork outgoingOrder
     
-sendWork :: Chan String -> Handle -> IO ()
-sendWork outgoingOrder handle = do
+sendWork :: Chan String -> IO ()
+sendWork outgoingOrder = do
     work <- readChan outgoingOrder
+    handle <- N.connectTo "10.57.110.10" (N.PortNumber 4446)
     putStrLn "Attempting to send work back"
     hPutStrLn handle work
     putStrLn "Work sent back"
+    hClose handle
     
 extractURLs :: [(String, Int, Int, String)] -> [String]
 extractURLs [] = []

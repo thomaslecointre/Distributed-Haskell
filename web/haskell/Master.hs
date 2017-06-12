@@ -171,6 +171,7 @@ handleWork :: Chan String                           -- ^ Channel where work from
 handleWork workFiltering okToProcess registered slaveCountReception (handle, hostName, portNumber) = do
     putStrLn "Slave ready to return work"
     code <- hGetLine handle
+    hClose handle
     print $ "Work retrieved : " ++ code
     writeChan workFiltering code
     registered' <- takeMVar registered
