@@ -29,7 +29,7 @@ main = do
     forkIO $ sendOrders orders registered
     forkIO $ receiveWork workFiltering okToProcess registered
     forkIO $ filterWork workFiltering filteredWork
-    forkIO $ processWork okToProcess filteredWork orderType
+    forkIO $ processWork okToProcess filteredWork orderType workStatus
     forever $ do
         putStrLn "Master is active..."
         threadDelay 5000000
@@ -107,13 +107,13 @@ sendOrders :: Chan [String] -- ^ Channel used for broadcasting orders across thr
            -> MVar [String] -- ^ Variable containing all registered slaves
            -> IO ()
 sendOrders orders registered = do
+    orders' <- readChan orders
+    print $ "Orders to be parsed : " ++ (show orders')
     registered' <- takeMVar registered
     putMVar registered registered'
     let numberOfRegistered = length registered'
     if numberOfRegistered > 0
         then do
-            orders' <- readChan orders
-            print $ "Orders to be parsed : " ++ (show orders')
             let parsedOrders = OD.parseArguments orders' numberOfRegistered
             print $ "Parsed orders : " ++ (show parsedOrders)
             dispatchOrders parsedOrders registered'
@@ -121,8 +121,8 @@ sendOrders orders registered = do
         else do
             putStrLn "No slaves available!"
             threadDelay 5000000
-	    sendOrders orders registered
-            
+            sendOrders orders registered
+           
 -- |Dispatches orders to all slaves
 dispatchOrders :: [[[String]]]     -- ^ Parsed orders
                -> [String]         -- ^ slave IP address table
@@ -143,7 +143,6 @@ dispatchOrder o a = do
     print $ "Attempting to connect to : " ++ a
     handle <- N.connectTo a (N.PortNumber 5000)
     print $ "Connected to slave @ " ++ a
-    hSetBuffering handle LineBuffering
     hPutStrLn handle (show o)
     hClose handle
 
@@ -211,8 +210,9 @@ filterWork workFiltering filteredWork = do
 processWork :: Chan String      -- ^ Channel used to indicated all expected work has arrived
             -> MVar [String]    -- ^ Variable containing all currently received work from slaves
             -> MVar String      -- ^ Variable used to define the type of order to be executed by each slave (keyword research or statistics)
+            -> Chan String      -- ^ Channel used for broadcasting status of work
             -> IO ()
-processWork okToProcess filteredWork orderType = do
+processWork okToProcess filteredWork orderType workStatus = do
     status <- readChan okToProcess
     if status == "OK"
         then do
@@ -221,18 +221,22 @@ processWork okToProcess filteredWork orderType = do
             if orderType' == "N/A"
                 then statistics allOfTheWork
                 else keyword allOfTheWork
+            writeChan workStatus "OK"
             putMVar filteredWork []
-            processWork okToProcess filteredWork orderType
+            processWork okToProcess filteredWork orderType workStatus
         else do
             putStrLn "Waiting for all slaves to submit work"
-            processWork okToProcess filteredWork orderType
+            processWork okToProcess filteredWork orderType workStatus
 
 -- |Creates JSON for statistics display
 statistics  :: [String] -- ^ Extracted value from filteredWork mvar
             -> IO ()
 statistics work = do
     putStrLn "Working on statistics"
-    writeFile "../JSON/statistics.json" (Stat.concatStatistics work)
+    path <- getCurrentDirectory
+    let jsonPath =  (take ((length path) - 7) ) path ++ "public\\views\\json"
+    writeFile (jsonPath ++ "\\" ++ "statistics.json") (Stat.concatStatistics work)
+    putStrLn "Statistics done"
 
 -- |Creates JSON for keyword display
 keyword :: [String] -- ^ Extracted value from filteredWork mvar
@@ -244,4 +248,4 @@ keyword work = do
     writeFile (jsonPath ++ "\\" ++ "chronological.json") (Sort.concatChronologicalSort work)
     writeFile (jsonPath ++ "\\" ++ "per-season.json") (Sort.concatSeasonSort work)
     writeFile (jsonPath ++ "\\" ++ "pertinence.json") (Sort.concatRelevanceSort work)
-    
+    putStrLn "Keywords done"

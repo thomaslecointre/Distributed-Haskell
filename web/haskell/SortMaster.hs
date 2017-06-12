@@ -26,13 +26,13 @@ chronogicalSort ([season, episode, occurrence]:l) =
 chronogicalSortToJSON   :: [[[Int]]]    -- ^ A list like [[[1,1,2],[1,2,3]],[[2,1,4],[2,2,3]],[[3,1,2],[3,2,1]]]
                         -> String       -- ^ {"1" : [2,3], "2" : [4,3], "3" : [2,1]}
 chronogicalSortToJSON [] = ""
-chronogicalSortToJSON l = "{" ++ (concat $ DL.intersperse "," $ map chronogicalSort l) ++ "}"
+chronogicalSortToJSON l = "{" ++ (concat $ DL.intersperse ", " $ map chronogicalSort l) ++ "}"
 
 -- |Takes a list of String where each String is like "[[[Int]]]" and returns a JSON content
 concatChronologicalSort :: [String] -- ^ A list like ["[[[1,2,3],[4,5,6]],[[7,8,9],[0,1,2]]]", "[[[3,4,5],[6,7,8]],[[9,0,1],[1,2,3]]]", "[[[4,5,6],[7,8,9]],[[0,1,2],[3,4,5]]]"]
                         -> String   -- ^ The content of a JSON file like {"1" : [2,3], "2" : [4,3], "3" : [2,1]}
 concatChronologicalSort l =
-    let listEachSeason = concat $ concatSlaveResult l in
+    let listEachSeason = DL.sort $ concat $ concatSlaveResult l in
     chronogicalSortToJSON listEachSeason
 
 
@@ -74,7 +74,7 @@ sortBySeasonToJSON l = "{" ++ (concat $ DL.intersperse "," $ map sortBySeason l)
 concatSeasonSort    :: [String] -- ^ ["[[[1,1,2],[1,2,3]],[[2,1,4],[2,2,3]]]","[[[3,1,2],[3,2,1]]]"]
                     -> String   -- ^ {"1" : [{ "2" : 3 }, { "1" : 2 }], "2" : [{ "1" : 4 }, { "2" : 3 }], "3" : [{ "1" : 2 }, { "2" : 1 }]}
 concatSeasonSort l =
-    let listEachSeason = concat $ concatSlaveResult l in
+    let listEachSeason = DL.sort $ concat $ concatSlaveResult l in
     sortBySeasonToJSON listEachSeason
 
 
