@@ -15,11 +15,15 @@ app.use('/client', express.static(path.join(__dirname, 'public', 'client')));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'public', 'views'));
 
-app.get('/search/:series/:keyword', function (req, res) {
+app.get('/search/:series/:keyword/:request', function (req, res) {
   console.log('Request made for search result');
   var series = req.params.series;
   var keyword = req.params.keyword;
-  imdb.query(series, keyword, res);
+  if(keyword === "N_A") {
+    keyword = "N/A";
+  }
+  var request = req.params.request;
+  imdb.query(series, keyword, res, request);
 });
 
 app.get('/', function (req, res) {

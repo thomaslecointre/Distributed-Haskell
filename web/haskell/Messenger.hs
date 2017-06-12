@@ -15,14 +15,12 @@ main = do
     if last currentPath == 'b'
         then do
             let path = currentPath ++ "\\public\\" ++ seasonName
-            print $ "Season path is : " ++ path
             seasons <- listDirectory path
             files <- discoverFiles seasons path
             let arguments = map (show . verifiedLengths) files
             sendOrder 4445 (xs ++ arguments)
         else do
             let path = currentPath ++ "\\Web\\public\\" ++ seasonName
-            print $ "Season path is : " ++ path
             seasons <- listDirectory path
             files <- discoverFiles seasons path
             let arguments = map (show . verifiedLengths) files

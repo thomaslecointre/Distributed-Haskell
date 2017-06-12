@@ -1,9 +1,11 @@
 module.exports = {
-  launch : function(arguments) {
+  launch : function(arguments, res, request) {
     const spawnSync = require('child_process').spawnSync;
     const spawn = require('child_process').spawn;
     const fs = require('fs');
     const path = require('path');
+    const ejs = require('ejs');
+
 
     const haskell = path.join(__dirname, 'haskell');
     
@@ -19,6 +21,22 @@ module.exports = {
 
     cmd.on('close', (code) => {
       console.log(`child process exited with code ${code}`);
+      // switch (request) {
+      //   case "chronological":
+      //     var template = fs.readFileSync(path.join(public, views, 'chronological.ejs'));
+      //     var content = fs.readFileSync(path.join(public, views, json, 'chronological.json'));
+      //     res.end(ejs.render());
+      //     break;
+      //   case "per-season":
+      //     res.end(ejs.render());
+      //     break;
+      //   case "pertinence":
+      //     res.end(ejs.render());
+      //     break;
+      //   case "statistics":
+      //     res.end(ejs.render());
+      //     break;
+      // }
     });
   }
 }

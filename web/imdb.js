@@ -1,5 +1,5 @@
 module.exports = {
-  query : function (series, keyword, res) {
+  query : function (series, keyword, res, request) {
     const imdb = require('imdb-api');
 
     imdb.get(series, {apiKey: '46e82526'}, (err, things) => {
@@ -52,8 +52,8 @@ module.exports = {
           var haskell = require('./haskell');
           var args = [keyword, urlTitle];
           console.log("Arguments sent to messenger : " + args);
-          haskell.launch(args);
-          
+          haskell.launch(args, res, request);
+
         });
       }
     });
