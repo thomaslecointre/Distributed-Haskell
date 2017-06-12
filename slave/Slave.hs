@@ -31,7 +31,6 @@ main = do
     incomingOrder <- newChan
     outgoingOrder <- newChan
     (handle, host, port) <- N.accept socket
-    hSetBuffering handle LineBuffering
     forkIO $ receiveOrder handle incomingOrder
     forkIO $ executeOrder incomingOrder outgoingOrder
     forkIO $ prepareToSendWork outgoingOrder
@@ -42,6 +41,7 @@ main = do
 -- |Receives and broadcasts next order on incomingOrder channel
 receiveOrder :: Handle -> Chan [[String]] -> IO ()
 receiveOrder handle incomingOrder = do
+    putStrLn "Receiving orders..."
     code <- hGetLine handle
     let order = read code :: [[String]]
     print $ "Order received : " ++ show order
