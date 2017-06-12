@@ -2,6 +2,7 @@
 
 import qualified Network as N
 import Network.HTTP.Client
+import Network.Socket
 
 import System.IO
 import System.Environment
@@ -27,11 +28,9 @@ main = do
     print "Connecting to Master @10.57.110.10:4444"
     handle <- N.connectTo "10.57.110.10" (N.PortNumber 4444)
     putStrLn "Connected"
-    socket <- N.listenOn (N.PortNumber 5000)
     incomingOrder <- newChan
     outgoingOrder <- newChan
-    (handle, host, port) <- N.accept socket
-    forkIO $ receiveOrder handle incomingOrder
+    forkIO $ receiveOrder incomingOrder
     forkIO $ executeOrder incomingOrder outgoingOrder
     forkIO $ prepareToSendWork outgoingOrder
     forever $ do
@@ -39,15 +38,18 @@ main = do
         threadDelay 5000000
 
 -- |Receives and broadcasts next order on incomingOrder channel
-receiveOrder :: Handle -> Chan [[String]] -> IO ()
-receiveOrder handle incomingOrder = do
+receiveOrder :: Chan [[String]] -> IO ()
+receiveOrder incomingOrder = do
+    socket <- N.listenOn (N.PortNumber 5000)
+    (handle, host, port) <- N.accept socket
     putStrLn "Receiving orders..."
     code <- hGetLine handle
     let order = read code :: [[String]]
     print $ "Order received : " ++ show order
     writeChan incomingOrder order
-    receiveOrder handle incomingOrder
-    -- receiveOrder handle incomingOrder
+    hClose handle
+    close socket
+    receiveOrder incomingOrder
 
 -- | Reads and executes next order
 executeOrder    :: Chan [[String]] 
