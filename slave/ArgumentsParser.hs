@@ -1,3 +1,16 @@
+{-|
+Module      : ArgumentsParser
+Description : Transforms a list of String like ["kw", "serie","s","n"] into a list of tuples like [("kw",s,e,"url")]
+Copyright   : (c) Thomas Lecointre, 2017
+                  Thomas Perles, 2017
+License     : MIT
+Maintainer  :   thomas.lecointre@uha.fr
+                thomas.perles@uha.fr
+Stability   : experimental
+Portability : Windows
+
+We use this module to transmit data and create an url
+-}
 module ArgumentsParser where
 
 import System.Environment
