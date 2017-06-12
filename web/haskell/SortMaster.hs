@@ -1,3 +1,17 @@
+{-|
+Module      : SortMaster
+Description : Transforms a list of String to a list of [[[Int]]], sorts it and creates a JSON content
+Copyright   : (c) Thomas Lecointre, 2017
+                  Thomas Perles, 2017
+License     : MIT
+Maintainer  :   thomas.lecointre@uha.fr
+                thomas.perles@uha.fr
+Stability   : experimental
+Portability : Windows
+
+We use this module to transform data, sort them and create a JSON content
+
+-}
 module SortMaster where
 
 import qualified Data.List as DL
