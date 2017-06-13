@@ -26,7 +26,7 @@ module.exports = {
         case "chronological":
           var template = fs.readFileSync(path.join(public, views, 'chronological.ejs'));
           var obj = JSON.parse(fs.readFileSync(path.join(public, views, json, 'chronological.json')));
-          res.end(ejs.render());
+          res.end(ejs.render(template, {data: obj}));
           break;
         case "per-season":
           res.end(ejs.render());

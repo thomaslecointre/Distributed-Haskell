@@ -1,6 +1,6 @@
 <ul>
     <% for(var seasons in data) { %>
-        <% for(var episodes = 1; episodes <= seasons.length; episodes++) { %>
+        <% for(var episodes in seasons) { %>
             <li>Season <%- seasons %>, Episode <%- episodes %> : <%= data[seasons][episodes] %></li>
         <% } %>
     <% } %>
