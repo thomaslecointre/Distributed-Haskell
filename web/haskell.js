@@ -21,22 +21,24 @@ module.exports = {
 
     cmd.on('close', (code) => {
       console.log(`child process exited with code ${code}`);
-      // switch (request) {
-      //   case "chronological":
-      //     var template = fs.readFileSync(path.join(public, views, 'chronological.ejs'));
-      //     var content = fs.readFileSync(path.join(public, views, json, 'chronological.json'));
-      //     res.end(ejs.render());
-      //     break;
-      //   case "per-season":
-      //     res.end(ejs.render());
-      //     break;
-      //   case "pertinence":
-      //     res.end(ejs.render());
-      //     break;
-      //   case "statistics":
-      //     res.end(ejs.render());
-      //     break;
-      // }
+      
+      switch (request) {
+        case "chronological":
+          var template = fs.readFileSync(path.join(public, views, 'chronological.ejs'));
+          var obj = JSON.parse(fs.readFileSync(path.join(public, views, json, 'chronological.json')));
+          res.end(ejs.render());
+          break;
+        case "per-season":
+          res.end(ejs.render());
+          break;
+        case "pertinence":
+          res.end(ejs.render());
+          break;
+        case "statistics":
+          res.end(ejs.render());
+          break;
+      }
+      
     });
   }
 }

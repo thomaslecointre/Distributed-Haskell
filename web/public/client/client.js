@@ -95,7 +95,9 @@ $(document).ready(function () {
 
     chronological.on({
         click: function() {
-            displayChoice = displayChoices.CHRONOLOGICAL;
+            if(displayChoice !== displayChoices.STATISTICS) {
+                displayChoice = displayChoices.CHRONOLOGICAL;
+            }
             chronological.css('background-color', '#3f51b5');
             chronological.css('color', 'white');
             per_season.css('background-color', '#c5cae9');
@@ -115,7 +117,9 @@ $(document).ready(function () {
 
     per_season.on({
         click: function() {
-            displayChoice = displayChoices.PERSEASON;
+            if(displayChoice !== displayChoices.STATISTICS) {
+                displayChoice = displayChoices.PERSEASON;
+            }
             per_season.css('background-color', '#3f51b5');
             per_season.css('color', 'white');
             chronological.css('background-color', '#c5cae9');
@@ -135,7 +139,9 @@ $(document).ready(function () {
 
     pertinence.on({
         click: function() {
-            displayChoice = displayChoices.PERTINENCE;
+            if(displayChoice !== displayChoices.STATISTICS) {
+                displayChoice = displayChoices.PERTINENCE;
+            }
             pertinence.css('background-color', '#3f51b5');
             pertinence.css('color', 'white');
             per_season.css('background-color', '#c5cae9');
