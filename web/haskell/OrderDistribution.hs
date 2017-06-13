@@ -1,3 +1,17 @@
+{-|
+Module      : OrderDistribution
+Description : Extracts the two first elements of a list and splits the rest into the number passed in argument
+Copyright   : (c) Thomas Lecointre, 2017
+                  Thomas Perles, 2017
+License     : MIT
+Maintainer  :   thomas.lecointre@uha.fr
+                thomas.perles@uha.fr
+Stability   : experimental
+Portability : Windows
+
+We use this module to distribute data using a list
+
+-}
 module OrderDistribution where
 
 import System.Environment
@@ -29,7 +43,7 @@ concatSeasonPerSlave    :: [[String]]                   -- ^ The first list whic
 concatSeasonPerSlave x xs 0     = (x, xs)
 concatSeasonPerSlave l (x:xs) i = concatSeasonPerSlave (l++[x]) xs (i-1)
 
--- |Splits the list into several lists with 
+-- |Splits the list into several lists and distributes some seasons for each slave
 seasonPerSlave  :: [[String]]       -- ^ The list to be split like [["Ned","GoT","1","3"], ["Ned","GoT","2","3"], ["Ned","GoT","3","2"]]
                 -> Int              -- ^ The number of elements which each list has at least like 1
                 -> Int              -- ^ The number of list which have one more element like 1
@@ -41,7 +55,7 @@ seasonPerSlave l q r  = if r > 0
                         else let (x,xs) = concatSeasonPerSlave [] l q in
                         x:(seasonPerSlave xs q 0)
 
--- |Extracts the two first arguments of a list and splits the rest into the number defined
+-- |Extracts the two first elements of a list and splits the rest into the number defined
 parseArguments  :: [String]         -- ^ The list which is treated like ["Ned", "GoT","10","9","10","7","8","10","7"]
                 -> Int              -- ^ The number of lists which will be created like 3
                 -> [[[String]]]     -- ^ [[["Ned","GoT","1","10"],["Ned","GoT","2","9"],["Ned","GoT","3","10"]], [["Ned","GoT","4","7"], ["Ned","GoT","5","8"]], [["Ned","GoT","6","10"],["Ned","GoT","7","7"]]]

@@ -1,3 +1,17 @@
+{-|
+Module      : Utils
+Description : Functions to strip an IPv4 address from SockAddr of Network.Socket and to replace : and ] with whitespace
+Copyright   : (c) Thomas Lecointre, 2017
+                  Thomas Perles, 2017
+License     : MIT
+Maintainer  :   thomas.lecointre@uha.fr
+                thomas.perles@uha.fr
+Stability   : experimental
+Portability : Windows
+
+We use this module to strip an IPv4 address from SockAddr of Network.Socket and to replace : and ] with whitespace
+
+-}
 module Utils where
 
 import Data.String
