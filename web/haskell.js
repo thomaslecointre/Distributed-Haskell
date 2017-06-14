@@ -24,18 +24,19 @@ module.exports = {
       
       switch (request) {
         case "chronological":
-          var template = fs.readFileSync(path.join(public, views, 'chronological.ejs'));
-          var obj = JSON.parse(fs.readFileSync(path.join(public, views, json, 'chronological.json')));
-          res.end(ejs.render(template, {data: obj}));
+          var obj = JSON.parse(fs.readFileSync(path.join(__dirname, 'public', 'views', 'json', 'chronological.json')));
+          res.render(path.join(__dirname, 'public', 'views', 'chronological.ejs'), {data: obj});
           break;
         case "per-season":
-          res.end(ejs.render());
+          var obj = JSON.parse(fs.readFileSync(path.join(__dirname, 'public', 'views', 'json', 'per-season.json')));
+          res.render(path.join(__dirname, 'public', 'views', 'per-season.ejs'), {data: obj});
           break;
         case "pertinence":
-          res.end(ejs.render());
+          var obj = JSON.parse(fs.readFileSync(path.join(__dirname, 'public', 'views', 'json', 'pertinence.json')));
+          res.render(path.join(__dirname, 'public', 'views', 'pertinence.ejs'), {data: obj});
           break;
         case "statistics":
-          res.end(ejs.render());
+          res.end("Statistics not currently functioning. Please try a different request.");
           break;
       }
       

@@ -201,9 +201,10 @@ $(document).ready(function () {
                             type : 'GET',
                             url : '/search/' + series.val() + '/' + keyword.val() + '/' + displayChoice,
                             success : function (data) {
-                                $('#text-area').text(data.toString());
+                                $('#text-area').html(data.toString());
                             }
                         });
+                        $('#text-area').text("Processing request...");
                     }
                 } else {
                     console.log('No text found in keyword element');

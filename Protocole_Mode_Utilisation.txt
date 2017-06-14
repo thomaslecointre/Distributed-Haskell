@@ -94,11 +94,11 @@ Pour une étude par mot clef il doit fabriquer 3 fichiers JSON indiquant la mani
     
         - Le JSON a la forme suivante:
             {
-                "1" : [{"3", 7}, {"7", 6}, {"5", 5}...],
-                "2" : [...],
+                "1" : {"3": 7, "7": 6, "5": 5,...},
+                "2" : {...},
                 ...
             }
-            Une clef correspond au numéro d'une saison. La valeur est un tableau d'objets JSON avec comme clef le numéro d'épisode,
+            Une clef correspond au numéro d'une saison. La valeur est un objet JSON avec comme clefs les numéro d'épisodes,
             la valeur est la pertinence de l'épisode par rapport au mot clef.
 
     - pertinence -> On affiche par ordre descendant de pertinence.

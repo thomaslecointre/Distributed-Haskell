@@ -19,7 +19,10 @@ body {
 	width: 20%;
 	background-color: #c5cae9;
 	float: left;
-	height: 100vh;
+	height: 100%;
+	position: fixed;
+	top: 0;
+	bottom: 0;
 }
 
 #aside div {
@@ -114,7 +117,7 @@ body {
 }
 
 #search {
-	float: left;
+	float: right;
 	text-align: center;
 	width: 80%;
 	height: 30%;
@@ -164,6 +167,6 @@ button:hover {
 
 #text-area {
 	text-align: center;
-	font-size: 200%;
+	font-size: 3vh;
 }
 

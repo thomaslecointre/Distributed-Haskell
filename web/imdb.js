@@ -9,13 +9,12 @@ module.exports = {
         res.end('An error has occurred. Please try again.');
       } else {
         console.log('Processing request...');
-        res.end('Processing request...');
+        // res.end('Processing request...');
 
         var title = things.title;
         var urlTitle = title.toLowerCase().split(' ').join('_');
         var path = require('path');
         var seriesPath = path.join(__dirname, 'public', urlTitle);
-		console.log(seriesPath);
         var fs = require('fs');
         if (!fs.existsSync(seriesPath))  {
           fs.mkdirSync(seriesPath);

@@ -23,11 +23,12 @@ main = do
     workFiltering <- newChan
     okToProcess <- newChan
     filteredWork <- newMVar []
+    jobCount <- newMVar 0
     forkIO $ receiveOrders orders orderType workStatus
     forkIO $ receiveRegistrations registering
     forkIO $ sortRegistrations registering registered
-    forkIO $ sendOrders orders registered
-    forkIO $ receiveWork workFiltering okToProcess registered
+    forkIO $ sendOrders orders registered jobCount
+    forkIO $ receiveWork workFiltering okToProcess jobCount
     forkIO $ filterWork workFiltering filteredWork
     forkIO $ processWork okToProcess filteredWork orderType workStatus
     forever $ do
@@ -105,8 +106,9 @@ sortRegistrations registering registered = do
 -- |Checks if slaves are present. If so, orders are dispatched to slaves.          
 sendOrders :: Chan [String] -- ^ Channel used for broadcasting orders across threads
            -> MVar [String] -- ^ Variable containing all registered slaves
+           -> MVar Int      -- ^ Variable indicating the number of jobs currently sent out. This mitigates the possibility that there be more slaves than jobs available. 
            -> IO ()
-sendOrders orders registered = do
+sendOrders orders registered jobCount = do
     orders' <- readChan orders
     print $ "Orders to be parsed : " ++ (show orders')
     registered' <- takeMVar registered
@@ -116,30 +118,34 @@ sendOrders orders registered = do
         then do
             let parsedOrders = OD.parseArguments orders' numberOfRegistered
             print $ "Parsed orders : " ++ (show parsedOrders)
-            dispatchOrders parsedOrders registered'
-            sendOrders orders registered
+            dispatchOrders parsedOrders registered' jobCount
+            sendOrders orders registered jobCount
         else do
             putStrLn "No slaves available!"
             threadDelay 5000000
-            sendOrders orders registered
+            sendOrders orders registered jobCount
            
 -- |Dispatches orders to all slaves
 dispatchOrders :: [[[String]]]     -- ^ Parsed orders
                -> [String]         -- ^ slave IP address table
+               -> MVar Int         -- ^ Variable indicating the number of jobs currently sent out. This mitigates the possibility that there be more slaves than jobs available. 
                -> IO ()
-dispatchOrders _ [] = putStrLn "All orders dispatched or no slaves available"
-dispatchOrders [] _ = putStrLn "All orders dispatched or no parsed orders"
-dispatchOrders (x:xs) (y:ys) = do
+dispatchOrders _ [] _ = putStrLn "All orders dispatched or no slaves available"
+dispatchOrders [] _ _ = putStrLn "All orders dispatched or no parsed orders"
+dispatchOrders (x:xs) (y:ys) jobCount = do
     print $ "Dispatching orders to " ++ (show (y:ys))
-    dispatchOrder x y
+    dispatchOrder x y jobCount
     print $ "Dispatched order to : " ++ y
-    dispatchOrders xs ys
+    dispatchOrders xs ys jobCount
 
 -- |Dispatches order to a slave
 dispatchOrder :: [[String]]   -- ^ Order
-              -> String       -- ^ IP address of a particular slave  
+              -> String       -- ^ IP address of a particular slave
+              -> MVar Int     -- ^ Variable indicating the number of jobs currently sent out. This mitigates the possibility that there be more slaves than jobs available. 
               -> IO ()
-dispatchOrder o a = do
+dispatchOrder o a jobCount = do
+    jobCount' <- takeMVar jobCount
+    putMVar jobCount (jobCount' + 1)
     print $ "Attempting to connect to : " ++ a
     handle <- N.connectTo a (N.PortNumber 5000)
     print $ "Connected to slave @ " ++ a
@@ -154,39 +160,39 @@ dispatchOrder o a = do
 -}
 receiveWork :: Chan String      -- ^ Channel where work from slaves is deposited on
             -> Chan String      -- ^ Channel used to indicated all expected work has arrived
-            -> MVar [String]    -- ^ Variable containing all registered slaves 
+            -> MVar Int         -- ^ Variable indicating the number of jobs currently sent out. This mitigates the possibility that there be more slaves than jobs available. 
             -> IO ()
-receiveWork workFiltering okToProcess registered = do
+receiveWork workFiltering okToProcess jobCount = do
     slaveCountReception <- newMVar 1
     socket <- N.listenOn (N.PortNumber 4446)
-    forever $ N.accept socket >>= forkIO . (handleWork workFiltering okToProcess registered slaveCountReception)
+    forever $ N.accept socket >>= forkIO . (handleWork workFiltering okToProcess slaveCountReception jobCount)
 
 -- |Transfers each slave's work onto workFiltering channel
 handleWork :: Chan String                           -- ^ Channel where work from slaves is deposited on
            -> Chan String                           -- ^ Channel used to indicated all expected work has arrived
-           -> MVar [String]                         -- ^ Variable containing all registered slaves 
-           -> MVar Int                              -- ^ Variable/counter of all slaves who have currently deposited work
+           -> MVar Int                              -- ^ Variable/counter of all slaves who have currently deposited work 
+           -> MVar Int                              -- ^ Variable indicating the number of jobs currently sent out. This mitigates the possibility that there be more slaves than jobs available. 
            -> (Handle, NS.HostName, NS.PortNumber)  -- ^ Result of N.accept
            -> IO ()
-handleWork workFiltering okToProcess registered slaveCountReception (handle, hostName, portNumber) = do
+handleWork workFiltering okToProcess slaveCountReception jobCount (handle, hostName, portNumber) = do
     putStrLn "Slave ready to return work"
     code <- hGetLine handle
-    hClose handle
+    hClose handle 
     print $ "Work retrieved : " ++ code
     writeChan workFiltering code
-    registered' <- takeMVar registered
-    let slaveCount = length registered'
-    putMVar registered registered'
-    print $ "Number of registered slaves : " ++ (show slaveCount)
+    jobCount' <- takeMVar jobCount
+    print $ "Number of jobs sent out : " ++ (show jobCount')
     slaveCountReception' <- takeMVar slaveCountReception
     print $ "Number of slaves who have sent back work : " ++ (show slaveCountReception') 
-    if slaveCountReception' == slaveCount
+    if slaveCountReception' == jobCount'
         then do
             putMVar slaveCountReception 1
+            putMVar jobCount 0
             writeChan okToProcess "OK"
             putStrLn "Ok to process"
         else do
             putMVar slaveCountReception (slaveCountReception' + 1)
+            putMVar jobCount jobCount'
 
 -- |Filters incoming work by reading workFiltering channel and adding work to the filteredWork table variable.            
 filterWork :: Chan String   -- ^ Channel where work from slaves is deposited on
