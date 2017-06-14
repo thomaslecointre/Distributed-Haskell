@@ -8,8 +8,8 @@ module.exports = {
         console.log('Series error');
         res.end('An error has occurred. Please try again.');
       } else {
+        
         console.log('Processing request...');
-        // res.end('Processing request...');
 
         var title = things.title;
         var urlTitle = title.toLowerCase().split(' ').join('_');

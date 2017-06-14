@@ -25,23 +25,25 @@ import qualified KeyWordOccurrence as KWO
 
 main :: IO ()
 main = do
-    print "Connecting to Master @10.57.110.10:4444"
-    handle <- N.connectTo "10.57.110.10" (N.PortNumber 4444)
+    ip <- getArgs
+    let ip' = ip !! 0
+    print $ "Connecting to Master @" ++ ip' ++ ":4444" 
+    handle <- N.connectTo ip' (N.PortNumber 4444)
     putStrLn "Connected"
     incomingOrder <- newChan
     outgoingOrder <- newChan
     socket <- N.listenOn (N.PortNumber 5000)
     forkIO $ receiveOrder incomingOrder socket
-    forkIO $ executeOrder incomingOrder outgoingOrder
-    forkIO $ forever $ sendWork outgoingOrder
+    forkIO $ executeOrder incomingOrder outgoingOrder ip'
+    forkIO $ forever $ sendWork outgoingOrder ip'
     forever $ do
         putStrLn "Slave is active..."
-        threadDelay 5000000
+        threadDelay 500000
 
 -- |Receives and broadcasts next order on incomingOrder channel
-receiveOrder    :: Chan [[String]]  -- ^ 
-                -> N.Socket         -- ^ 
-                -> IO ()            -- ^ 
+receiveOrder    :: Chan [[String]]  -- ^ Channel used to broadcast incoming order
+                -> N.Socket         -- ^ Socket used to accept orders from Master
+                -> IO ()            
 receiveOrder incomingOrder socket = do
     (handle, host, port) <- N.accept socket
     putStrLn "Receiving orders..."
@@ -53,26 +55,28 @@ receiveOrder incomingOrder socket = do
     receiveOrder incomingOrder socket
 
 -- | Reads and executes next order
-executeOrder    :: Chan [[String]]  -- ^ 
-                -> Chan String      -- ^ 
+executeOrder    :: Chan [[String]]  -- ^ Channel used to broadcast incoming order
+                -> Chan String      -- ^ Channel used to transfer completed order to socket used for sending work back to Master
+                -> String           -- ^ IP address of Master
                 -> IO ()
-executeOrder incomingOrder outgoingOrder = do
+executeOrder incomingOrder outgoingOrder ip = do
     order <- readChan incomingOrder
-    let parsedArguments = map AP.parseArguments order
+    let parsedArguments = map (AP.parseArguments ip) order 
     let urls = map extractURLs parsedArguments
     putStrLn "Attempting to download all contents"
     contents <- getAllContent urls
     putStrLn "All descriptions downloaded"
     let work = process parsedArguments contents
     writeChan outgoingOrder work
-    executeOrder incomingOrder outgoingOrder
+    executeOrder incomingOrder outgoingOrder ip
 
 -- |Sends the work done to the master
-sendWork    :: Chan String  -- ^ 
-            -> IO ()        -- ^ 
-sendWork outgoingOrder = do
+sendWork    :: Chan String  -- ^ Channel where completed work is found
+            -> String       -- ^ IP address of Master
+            -> IO ()        
+sendWork outgoingOrder ip = do
     work <- readChan outgoingOrder
-    handle <- N.connectTo "10.57.110.10" (N.PortNumber 4446)
+    handle <- N.connectTo ip (N.PortNumber 4446)
     putStrLn "Attempting to send work back"
     hPutStrLn handle work
     putStrLn "Work sent back"

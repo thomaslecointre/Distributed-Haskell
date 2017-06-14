@@ -12,27 +12,28 @@ main = do
     xs <- getArgs
     let seasonName = xs !! 1
     currentPath <- getCurrentDirectory
-    if last currentPath == 'b'
-        then do
-            let path = currentPath ++ "\\public\\" ++ seasonName
-            seasons <- listDirectory path
-            files <- discoverFiles seasons path
-            let arguments = map (show . verifiedLengths) files
-            sendOrder 4445 (xs ++ arguments)
-        else do
-            let path = currentPath ++ "\\Web\\public\\" ++ seasonName
-            seasons <- listDirectory path
-            files <- discoverFiles seasons path
-            let arguments = map (show . verifiedLengths) files
-            sendOrder 4445 (xs ++ arguments)
+    let path = (fixFullPath currentPath) ++ seasonName
+    seasons <- listDirectory path
+    files <- discoverFiles seasons path
+    let arguments = map (show . verifiedLengths) files
+    sendOrder 4445 (xs ++ arguments)
 
+-- |Function exists only to solve the strange pathing problems as a result of getCurrentDirectory function.
+fixFullPath :: FilePath -- ^ Result of getCurrentDirectory
+            -> String   -- ^ Complete path up until public directory
+fixFullPath p = do
+    if last p == 'b'
+        then p ++ "\\public\\"
+        else p ++ "\\Web\\public\\" 
 
+-- |Discovers files recently downloaded by web server.
 discoverFiles :: [FilePath] -> String -> IO [[FilePath]]
 discoverFiles seasons path = do
     let paths = sort seasons
     let paths' = map ((path ++ "/") ++) paths
     mapM listDirectory paths'
 
+-- |Counts episodes for all seasons.
 verifiedLengths :: [FilePath] -> Int
 verifiedLengths seasonEpisodes = do
     let episodeCount = length seasonEpisodes
@@ -41,7 +42,7 @@ verifiedLengths seasonEpisodes = do
 
 
 {-|
-    Sends the order received from web server to master haskell process.
+    Sends the order received from web server to Master haskell process.
 -}
 sendOrder   :: PortNumber   -- ^ The port number used for communicating with master haskell process
             -> [String]     -- ^ Arguments received in main from web server

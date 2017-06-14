@@ -1,6 +1,8 @@
 $(document).ready(function () {
-    
+
+    var requestSubmitted = false;
     var englishUsed = true;
+    
     var displayChoices = {
         CHRONOLOGICAL : "chronological",
         PERSEASON : "per-season",
@@ -63,10 +65,7 @@ $(document).ready(function () {
             statistics_request.css('background-color', '#c5cae9');
             statistics_request.css('color', 'black');
             $('#search-keyword').removeAttr('disabled');
-            // statistics_request.hover(function() {
-            //     statistics_request.css('background-color', '#3f51b5');
-            //     statistics_request.css('color', 'white');
-            // });
+
         }
     });
 
@@ -79,10 +78,7 @@ $(document).ready(function () {
             keyword_request.css('background-color', '#c5cae9');
             keyword_request.css('color', 'black');
             $('#search-keyword').attr('disabled','disabled');
-            // keyword_request.hover(function() {
-            //     keyword_request.css('background-color', '#3f51b5');
-            //     keyword_request.css('color', 'white');
-            // });
+
         }
     });
 
@@ -104,14 +100,15 @@ $(document).ready(function () {
             per_season.css('color', 'black');
             pertinence.css('background-color', '#c5cae9');
             pertinence.css('color', 'black');
-            // per_season.hover(function() {
-            //     per_season.css('background-color', '#3f51b5');
-            //     per_season.css('color', 'white');
-            // });
-            // pertinence.hover(function() {
-            //     pertinence.css('background-color', '#3f51b5');
-            //     pertinence.css('color', 'white');
-            // });
+            if (requestSubmitted) {
+                $.ajax({
+                    type : 'GET',
+                    url : '/view/chronological',
+                    success : function(data) {
+                        $('#text-area').html(data.toString());
+                    }
+                });
+            }
         }
     });
 
@@ -126,14 +123,15 @@ $(document).ready(function () {
             chronological.css('color', 'black');
             pertinence.css('background-color', '#c5cae9');
             pertinence.css('color', 'black');
-            // chronological.hover(function() {
-            //     chronological.css('background-color', '#3f51b5');
-            //     chronological.css('color', 'white');
-            // });
-            // pertinence.hover(function() {
-            //     pertinence.css('background-color', '#3f51b5');
-            //     pertinence.css('color', 'white');
-            // });
+            if (requestSubmitted) {
+                $.ajax({
+                    type : 'GET',
+                    url : '/view/per-season',
+                    success : function(data) {
+                        $('#text-area').html(data.toString());
+                    }
+                });
+            }
         }
     });
 
@@ -148,14 +146,15 @@ $(document).ready(function () {
             per_season.css('color', 'black');
             chronological.css('background-color', '#c5cae9');
             chronological.css('color', 'black');
-            // per_season.hover(function() {
-            //     per_season.css('background-color', '#3f51b5');
-            //     per_season.css('color', 'white');
-            // });
-            // chronological.hover(function() {
-            //     chronological.css('background-color', '#3f51b5');
-            //     chronological.css('color', 'white');
-            // });
+            if (requestSubmitted) {
+                $.ajax({
+                    type : 'GET',
+                    url : '/view/pertinence',
+                    success : function(data) {
+                        $('#text-area').html(data.toString());
+                    }
+                });
+            }
         }
     });
 
@@ -187,7 +186,8 @@ $(document).ready(function () {
                     type : 'GET',
                     url : '/search/' + series.val() + '/N_A/' + displayChoice,
                     success : function (data) {
-                        $('#text-area').text(data.toString());
+                        $('#text-area').html(data.toString());
+                        requestSubmitted = true;
                     }
                 });
             } else {
@@ -202,6 +202,7 @@ $(document).ready(function () {
                             url : '/search/' + series.val() + '/' + keyword.val() + '/' + displayChoice,
                             success : function (data) {
                                 $('#text-area').html(data.toString());
+                                requestSubmitted = true;
                             }
                         });
                         $('#text-area').text("Processing request...");
