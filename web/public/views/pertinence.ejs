@@ -1,0 +1,5 @@
+<% for(var key in data) { %>
+    <% var season = key.split("_")[0]; %>
+    <% var episode = key.split("_")[1]; %>
+    <p>Season <%- season %>, Episode <%- episode %> : <%= data[key] %></p>
+<% } %>
