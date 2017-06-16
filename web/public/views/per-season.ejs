@@ -1,5 +1,10 @@
+<p>------------------------------</p>
 <% for(var season in data) { %>
-    <% for(var episode in data[season]) { %>
-        <p>Season <%- season %>, Episode <%- episode %> : <%= data[season][episode] %></p>
+    <% for(var obj = 0; obj < data[season].length; obj++) { %>
+		<% var parsedObj = data[season][obj]; %>
+		<% var episode = Object.keys(parsedObj)[0]; %>
+		<% var pertinence = parsedObj[episode]; %>
+        <p>Season <%- season %>, Episode <%- episode %> : <%= pertinence %></p>
     <% } %>
+	<p>------------------------------</p>
 <% } %>

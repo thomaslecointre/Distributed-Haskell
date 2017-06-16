@@ -12,6 +12,7 @@ main = do
     xs <- getArgs
     let seasonName = xs !! 1
     currentPath <- getCurrentDirectory
+    threadDelay 50000 -- Give the web server some time to download all files (?? Not sure how to make this work all the time)
     let path = (fixFullPath currentPath) ++ seasonName
     seasons <- listDirectory path
     files <- discoverFiles seasons path
@@ -27,14 +28,17 @@ fixFullPath p = do
         else p ++ "\\Web\\public\\" 
 
 -- |Discovers files recently downloaded by web server.
-discoverFiles :: [FilePath] -> String -> IO [[FilePath]]
+discoverFiles   :: [FilePath]       -- ^ List of season numbers
+                -> String           -- ^ Path of season folder
+                -> IO [[FilePath]]  -- ^ List of episode numbers organised by season
 discoverFiles seasons path = do
     let paths = sort seasons
     let paths' = map ((path ++ "/") ++) paths
     mapM listDirectory paths'
 
--- |Counts episodes for all seasons.
-verifiedLengths :: [FilePath] -> Int
+-- |Counts episodes for all seasons. This mitigates the possibility of missing episodes after the api call has finished which could potentially corrupt the work of Slaves.
+verifiedLengths :: [FilePath] -- ^ List of episode numbers
+                -> Int        -- ^ Number of episodes actually downloadable
 verifiedLengths seasonEpisodes = do
     let episodeCount = length seasonEpisodes
     let verifiedEpisodes = takeWhile (\n -> elem (show n) seasonEpisodes) [1..episodeCount]

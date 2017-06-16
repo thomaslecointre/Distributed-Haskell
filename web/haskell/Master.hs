@@ -33,7 +33,7 @@ main = do
     forkIO $ processWork okToProcess filteredWork orderType workStatus
     forever $ do
         putStrLn "Master is active..."
-        threadDelay 500000
+        threadDelay 5000000
 
 -- |Receives connections from messengers
 receiveOrders :: Chan [String]    -- ^ Channel used for broadcasting orders across threads
@@ -122,6 +122,7 @@ sendOrders orders registered jobCount = do
             sendOrders orders registered jobCount
         else do
             putStrLn "No slaves available!"
+            writeChan orders orders'
             threadDelay 5000000
             sendOrders orders registered jobCount
            

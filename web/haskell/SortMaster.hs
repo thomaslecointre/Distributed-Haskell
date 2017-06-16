@@ -64,9 +64,9 @@ occurrenceEpisode   :: [[Int]]  -- ^ A list of list with 3 elements like [[1,4,-
                     -> String   -- ^ '"3" : 4, "1" : 3, "2" : 3'
 occurrenceEpisode [] = ""
 occurrenceEpisode ([season, occurrence, episode]:[]) =
-    (show $ show $ -episode) ++ " : " ++ (show $ occurrence)
+    "{" ++ (show $ show $ -episode) ++ " : " ++ (show $ occurrence) ++ "}"
 occurrenceEpisode ([season, occurrence, episode]:l) =
-    (show $ show $ -episode) ++ " : " ++ (show $ occurrence) ++ ", " ++ (occurrenceEpisode l)
+    "{" ++ (show $ show $ -episode) ++ " : " ++ (show $ occurrence) ++ "}, " ++ (occurrenceEpisode l)
     
 
 -- |Sorts a list of list of 3 elements by the first and the third elements, the second by descending order and returns a key-value readable by JSON
@@ -76,7 +76,7 @@ sortBySeason [] = ""
 sortBySeason ([season, episode, occurrence]:l) =
     let tmpList = changeList ([season, episode, occurrence]:l) in
     let sortedList = reverse $ DL.sort tmpList in
-    (show $ show season) ++ " : {" ++ (occurrenceEpisode sortedList) ++ "}"
+    (show $ show season) ++ " : [" ++ (occurrenceEpisode sortedList) ++ "]"
 
 -- |Sorts the list and creates a JSON file
 sortBySeasonToJSON  :: [[[Int]]]    -- ^ [[[1,1,2],[1,2,3]],[[2,1,4],[2,2,3]],[[3,1,2],[3,2,1]]]

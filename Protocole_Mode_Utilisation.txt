@@ -94,11 +94,11 @@ Pour une étude par mot clef il doit fabriquer 3 fichiers JSON indiquant la mani
     
         - Le JSON a la forme suivante:
             {
-                "1" : {"3": 7, "7": 6, "5": 5,...},
-                "2" : {...},
+                "1" : [{"3": 7}, {"7": 6}, {"5": 5},...],
+                "2" : [...],
                 ...
             }
-            Une clef correspond au numéro d'une saison. La valeur est un objet JSON avec comme clefs les numéro d'épisodes,
+            Une clef correspond au numéro d'une saison. La valeur est un tableau d'objets JSON. Pour chaque objet la clef et un numéro d'épisode,
             la valeur est la pertinence de l'épisode par rapport au mot clef.
 
     - pertinence -> On affiche par ordre descendant de pertinence.
@@ -119,6 +119,8 @@ Pour une étude statistique, un seul JSON est nécessaire.
         }
         Une clef est un numéro de saison. La valeur est un tableau d'objets JSON où à chaque indice d'épisode, on a l'ensemble des
         couples clefs, valeurs correspondant à un mot de la description et son occurrence.
+		
+		Malheureusement, nous n'avons pas pu mettre en place l'étude statistique par faute de temps.
 
 7. Suite au dépot de ces fichiers JSON, le Master envoie un signe de fin de traitement au Messenger. Le Messenger s'éteigne et le Web
 Server, enregistrant la fin du processus, peut alors remplir le template et envoyer les informations au client.
